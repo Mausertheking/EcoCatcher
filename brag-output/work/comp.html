@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EcoCatcher brag composition</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F2ECDF; --card:#FFFDF8; --ink:#1D1B18; --ink-2:#47423A; --muted:#776F61;
+  --rule:#DCD3C1; --rule-2:#C9BDA6; --crimson:#8F1D21; --navy:#1F3A5F; --gold:#A8874F; --ok:#2F6B4F;
+  --serif:"EB Garamond",Georgia,serif; --sans:Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--paper)}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--serif)}
+.layer{position:absolute;inset:0;opacity:0}
+.kicker{font-family:var(--sans);font-size:24px;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson);font-weight:600}
+.grain{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,rgba(255,253,248,.0) 0%,rgba(168,135,79,.10) 100%)}
+
+/* camera: the real site */
+#cam{position:absolute;overflow:hidden;opacity:0}
+#camInner{position:absolute;left:0;top:0;transform-origin:0 0}
+#site{width:1200px;height:675px;border:0;display:block;background:var(--paper)}
+#cam.framed{border:1px solid var(--rule);border-radius:10px;box-shadow:0 30px 80px -30px rgba(60,40,20,.35),0 2px 0 rgba(255,255,255,.6) inset;background:var(--card)}
+#chrome{position:absolute;left:0;right:0;top:0;height:44px;border-bottom:1px solid var(--rule);background:var(--paper-2);display:flex;align-items:center;gap:9px;padding:0 18px;z-index:2}
+#chrome i{width:12px;height:12px;border-radius:50%;background:var(--rule-2);display:block}
+
+/* S1 */
+#s1 .wrap{position:absolute;left:220px;top:300px}
+#s1 .big{font-size:230px;line-height:1;font-weight:500;letter-spacing:-.015em;margin-top:26px}
+#s1 .sub{font-size:120px;line-height:1.05;font-style:italic;color:var(--crimson);margin-top:6px}
+#s1 .double{height:6px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);width:0;margin-top:44px}
+
+/* S3 caption */
+#cap{position:absolute;left:52px;width:1140px;bottom:84px;background:rgba(255,253,248,.97);border:1px solid var(--rule);border-left:6px solid var(--crimson);padding:22px 34px 24px;box-shadow:0 20px 50px -24px rgba(60,40,20,.45);opacity:0}
+#cap .k{font-family:var(--sans);font-size:20px;letter-spacing:.18em;text-transform:uppercase;color:var(--crimson);font-weight:600}
+#cap .l{font-size:52px;line-height:1.1;margin-top:6px}
+#cap .l b{font-weight:600}
+#cursor{position:absolute;left:0;top:0;width:44px;height:44px;opacity:0;z-index:5;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+#ripple{position:absolute;width:20px;height:20px;border-radius:50%;border:3px solid var(--crimson);opacity:0;z-index:4}
+
+/* S4 */
+#s4 .col{position:absolute;left:1180px;top:170px;width:640px}
+#s4 h2{font-size:64px;font-weight:500;line-height:1.05;margin:14px 0 34px}
+.cardx{background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--navy);padding:20px 28px 22px;margin-bottom:22px;opacity:0;box-shadow:0 16px 40px -26px rgba(60,40,20,.45)}
+.cardx .k{font-family:var(--sans);font-size:17px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.cardx .v{font-size:42px;line-height:1.15;margin-top:4px}
+.cardx:nth-child(2){border-left-color:var(--ok)} .cardx:nth-child(3){border-left-color:var(--gold)}
+
+/* S5 */
+#s5 .col{position:absolute;left:130px;top:190px;width:760px}
+#s5 h2{font-size:70px;font-weight:500;line-height:1.05;margin:14px 0 40px}
+.fig{display:flex;align-items:baseline;gap:22px;border-top:1px solid var(--rule);padding:18px 0 16px;opacity:0}
+.fig .n{font-size:96px;font-weight:500;font-variant-numeric:tabular-nums;min-width:330px;line-height:1}
+.fig .t{font-family:var(--sans);font-size:24px;color:var(--ink-2);line-height:1.3}
+#s5 .foot{font-family:var(--sans);font-size:22px;color:var(--muted);margin-top:26px;opacity:0}
+
+/* S6 */
+#s6 .center{position:absolute;left:0;right:0;top:300px;text-align:center}
+#s6 .seal{width:120px;height:120px;border-radius:50%;border:4px solid var(--crimson);display:grid;place-items:center;color:var(--crimson);font-size:72px;font-weight:600;margin:0 auto;opacity:0}
+#s6 .name{font-size:150px;font-weight:500;letter-spacing:-.01em;line-height:1;margin-top:34px;opacity:0}
+#s6 .line{font-size:54px;font-style:italic;color:var(--crimson);margin-top:30px;opacity:0}
+#s6 .by{font-family:var(--sans);font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:40px;opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="grain"></div>
+
+  <div id="cam"><div id="chrome"><i></i><i></i><i></i></div><div id="camInner"><iframe id="site" src="/index.html#c=baku&h=15"></iframe></div></div>
+
+  <div class="layer" id="s1"><div class="wrap">
+    <div class="kicker">Azerbaijan · 15:00</div>
+    <div class="big" id="s1a">Baku.</div>
+    <div class="sub" id="s1b">31 °C outside.</div>
+    <div class="double" id="s1r"></div>
+  </div></div>
+
+  <div id="cap"><div class="k" id="capK"></div><div class="l" id="capL"></div></div>
+  <div id="ripple"></div>
+  <div id="rowmark" style="position:absolute;border:3px solid var(--crimson);border-radius:4px;opacity:0;z-index:3;box-shadow:0 0 0 6px rgba(143,29,33,.08)"></div>
+  <div id="uline" style="position:absolute;height:4px;background:var(--crimson);opacity:0;z-index:3"></div>
+  <svg id="cursor" viewBox="0 0 24 24"><path d="M4 2l16 9.5-7 1.6 4 7.4-3 1.5-4-7.4-5 4.9z" fill="#1D1B18" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+
+  <div class="layer" id="s4"><div class="col">
+    <div class="kicker">Judged by modern standards</div>
+    <h2>A centuries-old tower, <i style="color:var(--crimson)">with sensors.</i></h2>
+    <div class="cardx"><div class="k">Comfort criterion</div><div class="v">ASHRAE 55 adaptive comfort</div></div>
+    <div class="cardx"><div class="k">Smart louvers</div><div class="v">ESP32 + SHT31 sensor</div></div>
+    <div class="cardx"><div class="k">Power</div><div class="v">10 W solar panel<br>0 kWh from the grid</div></div>
+  </div></div>
+
+  <div class="layer" id="s5"><div class="col">
+    <div class="kicker">Baku · every year</div>
+    <h2>One room, <i style="color:var(--crimson)">one tower.</i></h2>
+    <div class="fig"><div class="n" data-to="750" data-fmt="{} kWh">0 kWh</div><div class="t">air-conditioning<br>energy saved</div></div>
+    <div class="fig"><div class="n" data-to="338" data-fmt="{} kg">0 kg</div><div class="t">CO₂ avoided</div></div>
+    <div class="fig"><div class="n" data-to="289" data-fmt="${}">$0</div><div class="t">to build, with<br>hand tools</div></div>
+    <div class="foot">One of 24 hot-climate cities in the atlas.</div>
+  </div></div>
+
+  <div class="layer" id="s6"><div class="center">
+    <div class="seal">E</div>
+    <div class="name">EcoCatcher</div>
+    <div class="line">No refrigerant. No compressor. No grid connection.</div>
+    <div class="by">Maksud Yusuf · Baku, Azerbaijan</div>
+  </div></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lin=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const eOut=x=>1-Math.pow(1-x,3);
+const eInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const lerp=(a,b,f)=>a+(b-a)*f;
+const SITE=()=>$('site').contentWindow, SD=()=>$('site').contentDocument;
+
+// scene times (100 BPM, 0.6 s per beat)
+const T={s1:[0,3.0], s2:[3.0,6.6], s3:[6.6,12.6], s4:[12.6,16.8], s5:[16.8,21.0], s6:[21.0,24.6]};
+const CLICK=9.0;
+// envelope: fade in over `fi` after a, fade out over `fo` before b
+function env(t,[a,b],fi=.35,fo=.3){ return Math.min(eOut(lin(t,a,a+fi)), 1-eInOut(lin(t,b-fo,b))); }
+function rise(el,t,start,dur=.55,dist=26){ const p=eOut(lin(t,start,start+dur)); el.style.opacity=p; el.style.transform=`translateY(${(1-p)*dist}px)`; }
+
+// --- the real site ---
+let siteState={preset:null,hour:null,scroll:null,mode:null};
+function siteReady(){
+  const d=SD(); const s=d.createElement('style');
+  s.textContent='html{scroll-behavior:auto!important} .toc{display:none!important} #toast{display:none!important} ::-webkit-scrollbar{display:none} html{scrollbar-width:none}';
+  d.head.appendChild(s);
+}
+function rectIn(sel){ const r=SD().querySelector(sel).getBoundingClientRect(); return {x:r.left,y:r.top,w:r.width,h:r.height}; }
+function docY(sel){ return SD().querySelector(sel).getBoundingClientRect().top + SITE().scrollY; }
+function scrollSite(y){ y=Math.round(y); if(siteState.scroll!==y){ SITE().scrollTo(0,y); siteState.scroll=y; } }
+function setPreset(p){ if(siteState.preset!==p){ SD().getElementById(p==='eco'?'presetEco':'presetTrad').click(); siteState.preset=p; } }
+function setHour(h){ if(siteState.hour!==h){ const w=SITE(); const sl=SD().getElementById('sHour'); sl.value=h; sl.dispatchEvent(new w.Event('input')); siteState.hour=h; } }
+// map an iframe-viewport rect onto a stage box
+let cam={s:1,tx:0,ty:0};
+function camera(box, view, scale){ // box: stage rect for #cam; view: {x,y} iframe viewport point at box top-left; scale
+  const c=$('cam'); c.style.left=box.x+'px'; c.style.top=box.y+'px'; c.style.width=box.w+'px'; c.style.height=box.h+'px';
+  const inner=$('camInner'); const off=box.chromeH||0;
+  inner.style.transform=`translate(${-view.x*scale}px,${off - view.y*scale}px) scale(${scale})`;
+  cam={s:scale,tx:box.x - view.x*scale, ty:box.y + off - view.y*scale};
+}
+const toStage=(x,y)=>[cam.tx + x*cam.s, cam.ty + y*cam.s];
+
+function hideAll(){ ['s1','s4','s5','s6'].forEach(id=>$(id).style.opacity=0); $('cam').style.opacity=0; $('cap').style.opacity=0; $('cursor').style.opacity=0; $('ripple').style.opacity=0; $('uline').style.opacity=0; $('rowmark').style.opacity=0; }
+
+window.renderAt=function(t){
+  hideAll();
+  const c=$('cam');
+  // ---------- S1 hook ----------
+  if(t<T.s1[1]){
+    const e=env(t,T.s1,.01,.32); $('s1').style.opacity=e;
+    rise($('s1a'),t,.12,.6,40); rise($('s1b'),t,.85,.6,30);
+    $('s1r').style.width=(eOut(lin(t,1.2,2.2))*760)+'px';
+    $('s1').querySelector('.wrap').style.transform=`scale(${1+t*.006})`;
+    // pre-stage the site for S2
+    setPreset('trad'); setHour(15); scrollSite(0);
+  }
+  // ---------- S2 reveal: masthead in a browser frame ----------
+  else if(t<T.s2[1]){
+    scrollSite(0); setPreset('trad'); setHour(15);
+    c.classList.add('framed'); $('chrome').style.display='flex';
+    const e=env(t,T.s2,.45,.32); c.style.opacity=e;
+    const p=eInOut(lin(t,T.s2[0],T.s2[1]));
+    const s=lerp(1.6,1.66,p);
+    const w=710*1.6, h=565*1.6+44;
+    const box={x:(1920-w)/2,y:(1080-h)/2+(1-eOut(lin(t,3.0,3.6)))*30,w,h,chromeH:44};
+    camera(box,{x:lerp(10,14,p),y:lerp(85,90,p)},s);
+    // underline "Baku, Azerbaijan" in the real byline
+    const by=rectIn('.byline span:nth-child(2)'); const [ux,uy]=toStage(by.x,by.y+by.h+2);
+    const u=$('uline'); u.style.opacity=env(t,T.s2,.45,.32); u.style.left=ux+'px'; u.style.top=uy+'px';
+    u.style.width=(eOut(lin(t,4.9,5.5))*by.w*cam.s)+'px';
+  }
+  // ---------- S3 the model in use ----------
+  else if(t<T.s3[1]){
+    c.classList.remove('framed'); $('chrome').style.display='none';
+    scrollSite(docY('#presetRow')-18);
+    setPreset(t<CLICK ? 'trad' : 'eco'); setHour(15);
+    c.style.opacity=env(t,T.s3,.4,.3);
+    const p=eInOut(lin(t,9.5,12.4));
+    const s=lerp(1.6,1.68,p);
+    camera({x:0,y:0,w:1920,h:1080},{x:lerp(0,22,p),y:lerp(0,22,p)},s);
+    // cursor
+    const b=rectIn('#presetEco'); const [bx,by]=toStage(b.x+b.w*.55,b.y+b.h*.6);
+    const m=eInOut(lin(t,7.6,8.85));
+    const cx=lerp(1500,bx,m), cy=lerp(760,by,m);
+    const cur=$('cursor'); cur.style.opacity=Math.min(eOut(lin(t,7.3,7.6)),1-lin(t,10.0,10.4));
+    const press=(t>CLICK-.08&&t<CLICK+.1)?.86:1;
+    cur.style.transform=`translate(${cx-6}px,${cy-4}px) scale(${press})`;
+    const rp=lin(t,CLICK,CLICK+.55); if(rp>0&&rp<1){ const r=$('ripple'); const sz=20+rp*90; r.style.opacity=1-rp; r.style.width=r.style.height=sz+'px'; r.style.left=(bx-sz/2)+'px'; r.style.top=(by-sz/2)+'px'; }
+    // caption
+    const cap=$('cap');
+    if(t<CLICK){ $('capK').textContent='Traditional barjeel'; $('capL').innerHTML='Comfortable <b>10 of 24</b> hours'; cap.style.opacity=Math.min(eOut(lin(t,6.95,7.4)),1-lin(t,CLICK-.25,CLICK)); cap.style.borderLeftColor='var(--muted)'; }
+    else { $('capK').textContent='EcoCatcher · all six upgrades'; $('capL').innerHTML='Comfortable <b style="color:var(--ok)">24 of 24</b> hours'; cap.style.opacity=Math.min(eOut(lin(t,CLICK+.35,CLICK+.8)),1-lin(t,12.3,12.6)); cap.style.borderLeftColor='var(--crimson)'; }
+    cap.style.transform=`translateY(${(1-Math.min(1,eOut(lin(t,6.95,7.4))))*20}px)`;
+  }
+  // ---------- S4 modern standards ----------
+  else if(t<T.s4[1]){
+    setPreset('eco');
+    const hr=Math.min(22,6+Math.floor(lin(t,12.7,16.4)*16.99)); setHour(hr);
+    scrollSite(docY('#presetRow')-18);
+    const e=env(t,T.s4,.4,.3);
+    $('s4').style.opacity=e; c.style.opacity=e; c.classList.add('framed'); $('chrome').style.display='none';
+    const cv=rectIn('#cv'); const s=1040/cv.w;
+    const box={x:100,y:(1080-cv.h*s)/2,w:cv.w*s,h:cv.h*s};
+    const z=lerp(1,1.04,lin(t,T.s4[0],T.s4[1]));
+    camera(box,{x:cv.x+cv.w*(1-1/z)/2,y:cv.y+cv.h*(1-1/z)/2},s*z);
+    const cards=[...$('s4').querySelectorAll('.cardx')];
+    cards.forEach((el,i)=>rise(el,t,13.2+i*.6,.5,30));
+  }
+  // ---------- S5 what it gives back ----------
+  else if(t<T.s5[1]){
+    setPreset('eco'); setHour(15);
+    const e=env(t,T.s5,.4,.3); $('s5').style.opacity=e;
+    // atlas, real table, framed on the right
+    const row=[...SD().querySelectorAll('#atlasBody tr')].find(r=>r.textContent.includes('Baku'));
+    const p=eInOut(lin(t,T.s5[0],T.s5[1]));
+    scrollSite(docY('#atlasBody tr:nth-child(10)') - lerp(470,360,p));
+    const tb=rectIn('#atlasTbl');
+    const s=1.12; const box={x:950,y:(1080-675*s)/2,w:920,h:675*s};
+    c.classList.add('framed'); $('chrome').style.display='none';
+    c.style.opacity=Math.min(e, eOut(lin(t,17.2,17.7)));
+    camera(box,{x:tb.x-10, y:0},s);
+    const rr=row.getBoundingClientRect(); const [mx,my]=toStage(rr.left,rr.top);
+    const mk=$('rowmark'); mk.style.left=(box.x+3)+'px'; mk.style.width=(box.w-6)+'px'; mk.style.top=my+'px'; mk.style.height=(rr.height*s)+'px';
+    mk.style.opacity=Math.min(c.style.opacity, eOut(lin(t,18.0,18.4)));
+    [...$('s5').querySelectorAll('.fig')].forEach((el,i)=>{
+      const st=17.1+i*.6; rise(el,t,st,.5,24);
+      const n=el.querySelector('.n'); const v=Math.round(+n.dataset.to*eOut(lin(t,st,st+.7)));
+      n.textContent=n.dataset.fmt.replace('{}',v.toLocaleString('en-US'));
+    });
+    rise($('s5').querySelector('.foot'),t,18.75,.5,16);
+  }
+  // ---------- S6 outro ----------
+  else {
+    const e=env(t,[T.s6[0],99],.35,.3); $('s6').style.opacity=e;
+    const q=$('s6');
+    rise(q.querySelector('.seal'),t,21.0,.6,20);
+    rise(q.querySelector('.name'),t,21.4,.7,30);
+    rise(q.querySelector('.line'),t,22.0,.6,22);
+    rise(q.querySelector('.by'),t,22.6,.6,14);
+  }
+};
+
+window.compReady = (async()=>{
+  await new Promise(r=>{ const f=$('site'); if(f.contentDocument && f.contentDocument.readyState==='complete') r(); else f.addEventListener('load',r,{once:true}); });
+  siteReady();
+  await document.fonts.ready; await SD().fonts.ready;
+  return true;
+})();
+</script>
+</body>
+</html>
