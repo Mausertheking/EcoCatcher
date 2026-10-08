@@ -3,7 +3,7 @@ cd /home/user/EcoCatcher/brag-output
 # mux picture + score
 ffmpeg -y -loglevel error -i work/video-silent.mp4 -i work/score.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest work/brag-raw.mp4
 # poster: settled masthead frame, "Baku, Azerbaijan" underlined
-ffmpeg -y -loglevel error -ss 6.0 -i work/brag-raw.mp4 -frames:v 1 -q:v 2 brag.jpg
+ffmpeg -y -loglevel error -ss 4.9 -i work/brag-raw.mp4 -frames:v 1 -q:v 2 brag.jpg
 # bake the poster in as frame 0 (replace, keep timing)
 ffmpeg -y -loglevel error -i work/brag-raw.mp4 -i brag.jpg \
   -filter_complex "[0:v][1:v]overlay=0:0:enable='eq(n,0)'[v]" \

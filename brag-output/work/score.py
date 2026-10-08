@@ -1,8 +1,8 @@
-"""Original score + SFX for the EcoCatcher brag video (D major, 100 BPM, 24.6 s)."""
+"""Original score + SFX for the EcoCatcher brag video (D major, 100 BPM, 28.2 s)."""
 import numpy as np, wave
 
 SR = 48000
-DUR = 24.6
+DUR = 28.2
 BEAT = 0.6
 N = int(SR * (DUR + 0.05))
 rng = np.random.default_rng(7)
@@ -27,7 +27,7 @@ def lowpass(x, fc):
 # ---------- chord timeline (in beats) ----------
 D, Bm, G, A, Asus = [50, 57, 61, 66], [47, 54, 57, 62], [43, 55, 59, 62], [45, 57, 61, 64], [45, 57, 62, 64]
 CH = [(0, 4, D), (4, 8, Bm), (8, 12, G), (12, 16, A), (16, 20, D), (20, 24, Bm), (24, 28, G),
-      (28, 32, Asus), (32, 35, A), (35, 41, D)]
+      (28, 32, A), (32, 36, D), (36, 38, Bm), (38, 40, G), (40, 41, Asus), (41, 42, A), (42, 48, D)]
 
 # ---------- pad: soft additive saw, slow swell ----------
 def pad_note(f, d):
@@ -41,7 +41,7 @@ def pad_note(f, d):
     return x * env
 for b0, b1, ch in CH:
     t0, d = b0 * BEAT, (b1 - b0) * BEAT + 0.7
-    if b1 == 41: d = DUR - t0 + 0.05
+    if b1 == 48: d = DUR - t0 + 0.05
     for k, m in enumerate(ch[1:]):
         put(music, pad_note(hz(m), d), t0 - 0.05, 0.022, pan=(-0.4, 0.0, 0.4)[k])
 
@@ -51,13 +51,13 @@ def pluck(f, d=0.9, bright=1.0):
     x = np.sin(2 * np.pi * f * t) + 0.35 * bright * np.sin(4 * np.pi * f * t) * np.exp(-t * 9)
     return x * np.exp(-t * 5.5) * np.minimum(1, t / 0.004)
 ARP = [0, 1, 2, 3, 2, 1, 3, 2]
-for b in range(5 * 2, 41 * 2):            # eighth notes from 3.0 s
+for b in range(4 * 2, 47 * 2):            # eighth notes from the reveal (2.4 s)
     beat = b / 2
     ch = next(c for b0, b1, c in CH if b0 <= beat < b1)
     tones = [m + 12 for m in ch[1:]] + [ch[1] + 24]
     m = tones[ARP[b % 8]]
     g = 0.11 if b % 2 == 0 else 0.075
-    if beat >= 35: g *= max(0, 1 - (beat - 35) / 4)   # thin out under the outro
+    if beat >= 42: g *= max(0, 1 - (beat - 42) / 4)   # thin out under the outro
     put(music, pluck(hz(m)), beat * BEAT, g, pan=0.35 if b % 2 else -0.35)
 
 # ---------- bass + kick + shaker (S3..S5) ----------
@@ -69,7 +69,7 @@ def shaker():
     return lowpass(n * np.exp(-t * 60), 6500)
 def bass(f, d):
     t = tvec(d); return (np.sin(2 * np.pi * f * t) + 0.25 * np.sin(4 * np.pi * f * t)) * np.exp(-t * 2.4) * np.minimum(1, t / 0.01)
-for bt in range(11, 35):
+for bt in range(9, 42):
     ch = next(c for b0, b1, c in CH if b0 <= bt < b1)
     if bt % 2 == 1: put(music, kick(), bt * BEAT, 0.30)
     put(music, bass(hz(ch[0] - 12), 0.9), bt * BEAT, 0.15 if bt % 2 == 1 else 0.09)
@@ -77,7 +77,7 @@ for bt in range(11, 35):
     put(music, shaker(), bt * BEAT, 0.015, pan=-0.2)
 # low D root under the hook and the outro
 put(music, bass(hz(38), 2.6), 0.0, 0.12)
-put(music, bass(hz(38), 3.4), 35 * BEAT, 0.2)
+put(music, bass(hz(38), 3.4), 42 * BEAT, 0.2)
 
 # ---------- SFX in the same key ----------
 def marimba(f, d=0.9):
@@ -99,18 +99,21 @@ def tick():
 
 put(sfx, marimba(hz(62), 1.4), 0.12, 0.22)                       # "Baku."
 put(sfx, marimba(hz(69)), 0.85, 0.22, pan=0.15)                  # "31 °C outside."
-put(sfx, swell(0.55), 2.45, 0.10)                                # into the reveal
-put(sfx, marimba(hz(78), 0.6), 4.9, 0.13, pan=-0.2)              # underline "Baku, Azerbaijan"
-put(sfx, tick(), 9.0, 0.30, pan=0.2)                             # cursor click
+put(sfx, swell(0.55), 1.85, 0.10)                                # into the reveal
+put(sfx, marimba(hz(78), 0.6), 3.8, 0.13, pan=-0.2)              # underline "Baku, Azerbaijan"
+put(sfx, tick(), 7.8, 0.30, pan=0.2)                             # cursor click
 for k, m in enumerate([74, 78, 81]):                             # upgrades switch on
-    put(sfx, marimba(hz(m), 0.8), 9.06 + k * 0.075, 0.15, pan=-0.2 + 0.2 * k)
+    put(sfx, marimba(hz(m), 0.8), 7.86 + k * 0.075, 0.15, pan=-0.2 + 0.2 * k)
 for k, m in enumerate([69, 74, 78]):                             # three standards cards
-    put(sfx, marimba(hz(m)), 13.2 + k * 0.6, 0.20, pan=0.25)
+    put(sfx, marimba(hz(m)), 12.0 + k * 0.6, 0.20, pan=0.25)
 for k, m in enumerate([74, 78, 81]):                             # three Baku figures
-    put(sfx, marimba(hz(m)), 17.1 + k * 0.6, 0.18, pan=-0.25)
-put(sfx, swell(0.6), 20.4, 0.10)                                 # into the outro
-put(sfx, bell(hz(74)), 21.0, 0.17)                               # seal
-put(sfx, bell(hz(81), 3.0), 21.4, 0.07, pan=0.2)
+    put(sfx, marimba(hz(m)), 15.9 + k * 0.6, 0.18, pan=-0.25)
+for k, m in enumerate([66, 69, 74]):                             # where it fits: three uses
+    put(sfx, marimba(hz(m)), 20.3 + k * 0.6, 0.18, pan=0.25)
+put(sfx, marimba(hz(81), 0.6), 21.9, 0.10, pan=0.3)               # Absheron pilot marked
+put(sfx, swell(0.6), 24.6, 0.10)                                 # into the outro
+put(sfx, bell(hz(74)), 25.2, 0.17)                               # seal
+put(sfx, bell(hz(81), 3.0), 25.5, 0.07, pan=0.2)
 
 # ---------- shared room: one reverb for music and SFX ----------
 def reverb(x, sec=2.2, wet=0.22):

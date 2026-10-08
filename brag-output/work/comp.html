@@ -55,6 +55,10 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--p
 .fig .t{font-family:var(--sans);font-size:24px;color:var(--ink-2);line-height:1.3}
 #s5 .foot{font-family:var(--sans);font-size:22px;color:var(--muted);margin-top:26px;opacity:0}
 
+/* where it fits */
+#sW .col{position:absolute;left:130px;top:150px;width:800px}
+#sW h2{font-size:76px;font-weight:500;line-height:1.05;margin:14px 0 34px}
+#sW .cardx{border-left-color:var(--crimson)}
 /* S6 */
 #s6 .center{position:absolute;left:0;right:0;top:300px;text-align:center}
 #s6 .seal{width:120px;height:120px;border-radius:50%;border:4px solid var(--crimson);display:grid;place-items:center;color:var(--crimson);font-size:72px;font-weight:600;margin:0 auto;opacity:0}
@@ -99,11 +103,19 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--p
     <div class="foot">One of 24 hot-climate cities in the atlas.</div>
   </div></div>
 
+  <div class="layer" id="sW"><div class="col">
+    <div class="kicker">In modern life</div>
+    <h2>Where it <i style="color:var(--crimson)">fits.</i></h2>
+    <div class="cardx"><div class="k">Homes</div><div class="v">One tower per room.<br>Larger homes use several.</div></div>
+    <div class="cardx"><div class="k">Schools &amp; community buildings</div><div class="v">Pilot planned: Absheron peninsula</div></div>
+    <div class="cardx"><div class="k">Low-cost &amp; informal housing</div><div class="v">Hand tools, salvaged parts, no grid</div></div>
+  </div></div>
+
   <div class="layer" id="s6"><div class="center">
     <div class="seal">E</div>
     <div class="name">EcoCatcher</div>
     <div class="line">No refrigerant. No compressor. No grid connection.</div>
-    <div class="by">Maksud Yusuf · Baku, Azerbaijan</div>
+    <div class="by">Maksud Yusuf · Jamal Naghizade · Baku, Azerbaijan</div>
   </div></div>
 </div>
 
@@ -117,8 +129,8 @@ const lerp=(a,b,f)=>a+(b-a)*f;
 const SITE=()=>$('site').contentWindow, SD=()=>$('site').contentDocument;
 
 // scene times (100 BPM, 0.6 s per beat)
-const T={s1:[0,3.0], s2:[3.0,6.6], s3:[6.6,12.6], s4:[12.6,16.8], s5:[16.8,21.0], s6:[21.0,24.6]};
-const CLICK=9.0;
+const T={s1:[0,2.4], s2:[2.4,5.4], s3:[5.4,11.4], s4:[11.4,15.6], s5:[15.6,19.8], sW:[19.8,25.2], s6:[25.2,28.2]};
+const CLICK=7.8;
 // envelope: fade in over `fi` after a, fade out over `fo` before b
 function env(t,[a,b],fi=.35,fo=.3){ return Math.min(eOut(lin(t,a,a+fi)), 1-eInOut(lin(t,b-fo,b))); }
 function rise(el,t,start,dur=.55,dist=26){ const p=eOut(lin(t,start,start+dur)); el.style.opacity=p; el.style.transform=`translateY(${(1-p)*dist}px)`; }
@@ -145,7 +157,7 @@ function camera(box, view, scale){ // box: stage rect for #cam; view: {x,y} ifra
 }
 const toStage=(x,y)=>[cam.tx + x*cam.s, cam.ty + y*cam.s];
 
-function hideAll(){ ['s1','s4','s5','s6'].forEach(id=>$(id).style.opacity=0); $('cam').style.opacity=0; $('cap').style.opacity=0; $('cursor').style.opacity=0; $('ripple').style.opacity=0; $('uline').style.opacity=0; $('rowmark').style.opacity=0; }
+function hideAll(){ ['s1','s4','s5','sW','s6'].forEach(id=>$(id).style.opacity=0); $('cam').style.opacity=0; $('cap').style.opacity=0; $('cursor').style.opacity=0; $('ripple').style.opacity=0; $('uline').style.opacity=0; $('rowmark').style.opacity=0; }
 
 window.renderAt=function(t){
   hideAll();
@@ -154,7 +166,7 @@ window.renderAt=function(t){
   if(t<T.s1[1]){
     const e=env(t,T.s1,.01,.32); $('s1').style.opacity=e;
     rise($('s1a'),t,.12,.6,40); rise($('s1b'),t,.85,.6,30);
-    $('s1r').style.width=(eOut(lin(t,1.2,2.2))*760)+'px';
+    $('s1r').style.width=(eOut(lin(t,1.0,1.9))*760)+'px';
     $('s1').querySelector('.wrap').style.transform=`scale(${1+t*.006})`;
     // pre-stage the site for S2
     setPreset('trad'); setHour(15); scrollSite(0);
@@ -167,12 +179,12 @@ window.renderAt=function(t){
     const p=eInOut(lin(t,T.s2[0],T.s2[1]));
     const s=lerp(1.6,1.66,p);
     const w=710*1.6, h=565*1.6+44;
-    const box={x:(1920-w)/2,y:(1080-h)/2+(1-eOut(lin(t,3.0,3.6)))*30,w,h,chromeH:44};
+    const box={x:(1920-w)/2,y:(1080-h)/2+(1-eOut(lin(t,2.4,3.0)))*30,w,h,chromeH:44};
     camera(box,{x:lerp(10,14,p),y:lerp(85,90,p)},s);
     // underline "Baku, Azerbaijan" in the real byline
     const by=rectIn('.byline span:nth-child(2)'); const [ux,uy]=toStage(by.x,by.y+by.h+2);
     const u=$('uline'); u.style.opacity=env(t,T.s2,.45,.32); u.style.left=ux+'px'; u.style.top=uy+'px';
-    u.style.width=(eOut(lin(t,4.9,5.5))*by.w*cam.s)+'px';
+    u.style.width=(eOut(lin(t,3.8,4.4))*by.w*cam.s)+'px';
   }
   // ---------- S3 the model in use ----------
   else if(t<T.s3[1]){
@@ -180,27 +192,27 @@ window.renderAt=function(t){
     scrollSite(docY('#presetRow')-18);
     setPreset(t<CLICK ? 'trad' : 'eco'); setHour(15);
     c.style.opacity=env(t,T.s3,.4,.3);
-    const p=eInOut(lin(t,9.5,12.4));
+    const p=eInOut(lin(t,8.3,11.2));
     const s=lerp(1.6,1.68,p);
     camera({x:0,y:0,w:1920,h:1080},{x:lerp(0,22,p),y:lerp(0,22,p)},s);
     // cursor
     const b=rectIn('#presetEco'); const [bx,by]=toStage(b.x+b.w*.55,b.y+b.h*.6);
-    const m=eInOut(lin(t,7.6,8.85));
+    const m=eInOut(lin(t,6.4,7.65));
     const cx=lerp(1500,bx,m), cy=lerp(760,by,m);
-    const cur=$('cursor'); cur.style.opacity=Math.min(eOut(lin(t,7.3,7.6)),1-lin(t,10.0,10.4));
+    const cur=$('cursor'); cur.style.opacity=Math.min(eOut(lin(t,6.1,6.4)),1-lin(t,8.8,9.2));
     const press=(t>CLICK-.08&&t<CLICK+.1)?.86:1;
     cur.style.transform=`translate(${cx-6}px,${cy-4}px) scale(${press})`;
     const rp=lin(t,CLICK,CLICK+.55); if(rp>0&&rp<1){ const r=$('ripple'); const sz=20+rp*90; r.style.opacity=1-rp; r.style.width=r.style.height=sz+'px'; r.style.left=(bx-sz/2)+'px'; r.style.top=(by-sz/2)+'px'; }
     // caption
     const cap=$('cap');
-    if(t<CLICK){ $('capK').textContent='Traditional barjeel'; $('capL').innerHTML='Comfortable <b>10 of 24</b> hours'; cap.style.opacity=Math.min(eOut(lin(t,6.95,7.4)),1-lin(t,CLICK-.25,CLICK)); cap.style.borderLeftColor='var(--muted)'; }
-    else { $('capK').textContent='EcoCatcher · all six upgrades'; $('capL').innerHTML='Comfortable <b style="color:var(--ok)">24 of 24</b> hours'; cap.style.opacity=Math.min(eOut(lin(t,CLICK+.35,CLICK+.8)),1-lin(t,12.3,12.6)); cap.style.borderLeftColor='var(--crimson)'; }
-    cap.style.transform=`translateY(${(1-Math.min(1,eOut(lin(t,6.95,7.4))))*20}px)`;
+    if(t<CLICK){ $('capK').textContent='Traditional barjeel'; $('capL').innerHTML='Comfortable <b>10 of 24</b> hours'; cap.style.opacity=Math.min(eOut(lin(t,5.75,6.2)),1-lin(t,CLICK-.25,CLICK)); cap.style.borderLeftColor='var(--muted)'; }
+    else { $('capK').textContent='EcoCatcher · all six upgrades'; $('capL').innerHTML='Comfortable <b style="color:var(--ok)">24 of 24</b> hours'; cap.style.opacity=Math.min(eOut(lin(t,CLICK+.35,CLICK+.8)),1-lin(t,11.1,11.4)); cap.style.borderLeftColor='var(--crimson)'; }
+    cap.style.transform=`translateY(${(1-Math.min(1,eOut(lin(t,5.75,6.2))))*20}px)`;
   }
   // ---------- S4 modern standards ----------
   else if(t<T.s4[1]){
     setPreset('eco');
-    const hr=Math.min(22,6+Math.floor(lin(t,12.7,16.4)*16.99)); setHour(hr);
+    const hr=Math.min(22,6+Math.floor(lin(t,11.5,15.2)*16.99)); setHour(hr);
     scrollSite(docY('#presetRow')-18);
     const e=env(t,T.s4,.4,.3);
     $('s4').style.opacity=e; c.style.opacity=e; c.classList.add('framed'); $('chrome').style.display='none';
@@ -209,7 +221,7 @@ window.renderAt=function(t){
     const z=lerp(1,1.04,lin(t,T.s4[0],T.s4[1]));
     camera(box,{x:cv.x+cv.w*(1-1/z)/2,y:cv.y+cv.h*(1-1/z)/2},s*z);
     const cards=[...$('s4').querySelectorAll('.cardx')];
-    cards.forEach((el,i)=>rise(el,t,13.2+i*.6,.5,30));
+    cards.forEach((el,i)=>rise(el,t,12.0+i*.6,.5,30));
   }
   // ---------- S5 what it gives back ----------
   else if(t<T.s5[1]){
@@ -222,26 +234,42 @@ window.renderAt=function(t){
     const tb=rectIn('#atlasTbl');
     const s=1.12; const box={x:950,y:(1080-675*s)/2,w:920,h:675*s};
     c.classList.add('framed'); $('chrome').style.display='none';
-    c.style.opacity=Math.min(e, eOut(lin(t,17.2,17.7)));
+    c.style.opacity=Math.min(e, eOut(lin(t,16.0,16.5)));
     camera(box,{x:tb.x-10, y:0},s);
     const rr=row.getBoundingClientRect(); const [mx,my]=toStage(rr.left,rr.top);
     const mk=$('rowmark'); mk.style.left=(box.x+3)+'px'; mk.style.width=(box.w-6)+'px'; mk.style.top=my+'px'; mk.style.height=(rr.height*s)+'px';
-    mk.style.opacity=Math.min(c.style.opacity, eOut(lin(t,18.0,18.4)));
+    mk.style.opacity=Math.min(c.style.opacity, eOut(lin(t,16.8,17.2)));
     [...$('s5').querySelectorAll('.fig')].forEach((el,i)=>{
-      const st=17.1+i*.6; rise(el,t,st,.5,24);
+      const st=15.9+i*.6; rise(el,t,st,.5,24);
       const n=el.querySelector('.n'); const v=Math.round(+n.dataset.to*eOut(lin(t,st,st+.7)));
       n.textContent=n.dataset.fmt.replace('{}',v.toLocaleString('en-US'));
     });
-    rise($('s5').querySelector('.foot'),t,18.75,.5,16);
+    rise($('s5').querySelector('.foot'),t,17.55,.5,16);
+  }
+  // ---------- where it fits in modern life ----------
+  else if(t<T.sW[1]){
+    const e=env(t,T.sW,.4,.3); $('sW').style.opacity=e;
+    const p=eInOut(lin(t,T.sW[0],T.sW[1]));
+    const LI='#roadmap .timeline li:nth-child(4)';
+    scrollSite(docY(LI) - 300);
+    const li=rectIn(LI), tl=rectIn('#roadmap .timeline');
+    const s=860/(tl.w+24); const box={x:990,y:250,w:860,h:540};
+    c.classList.add('framed'); $('chrome').style.display='none';
+    c.style.opacity=Math.min(e, eOut(lin(t,20.0,20.5)));
+    camera(box,{x:tl.x-12,y:lerp(140,150,p)},s*lerp(1,1.02,p));
+    const [mx,my]=toStage(li.x-12,li.y-12);
+    const mk=$('rowmark'); mk.style.left=mx+'px'; mk.style.top=my+'px'; mk.style.width=((li.w+24)*s)+'px'; mk.style.height=((li.h+10)*s)+'px';
+    mk.style.opacity=Math.min(c.style.opacity, eOut(lin(t,21.9,22.3)));
+    [...$('sW').querySelectorAll('.cardx')].forEach((el,i)=>rise(el,t,20.3+i*.6,.5,30));
   }
   // ---------- S6 outro ----------
   else {
     const e=env(t,[T.s6[0],99],.35,.3); $('s6').style.opacity=e;
     const q=$('s6');
-    rise(q.querySelector('.seal'),t,21.0,.6,20);
-    rise(q.querySelector('.name'),t,21.4,.7,30);
-    rise(q.querySelector('.line'),t,22.0,.6,22);
-    rise(q.querySelector('.by'),t,22.6,.6,14);
+    rise(q.querySelector('.seal'),t,25.2,.6,20);
+    rise(q.querySelector('.name'),t,25.5,.7,30);
+    rise(q.querySelector('.line'),t,25.95,.6,22);
+    rise(q.querySelector('.by'),t,26.4,.6,14);
   }
 };
 

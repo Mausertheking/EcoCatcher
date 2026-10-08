@@ -1,7 +1,7 @@
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
 import { spawn } from 'node:child_process';
 const mode = process.argv[2] || 'stills';           // stills | video
-const FPS = 30, DUR = 24.6;
+const FPS = 30, DUR = 28.2;
 const b = await chromium.launch();
 const ctx = await b.newContext({ viewport:{width:1920,height:1080}, deviceScaleFactor:1, reducedMotion:'no-preference' });
 await ctx.addInitScript(()=>{ let s=1234567; Math.random=()=>{ s^=s<<13; s^=s>>>17; s^=s<<5; return ((s>>>0)%1e9)/1e9; }; });
