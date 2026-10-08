@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoCatcher Windcatcher Study</title>
+<meta name="description" content="EcoCatcher: a low-cost, zero-grid windcatcher for hot climates. An open, interactive building-physics study with a global climate atlas, in seven languages.">
+<meta name="author" content="Maksud Yusuf">
+<meta property="og:title" content="EcoCatcher — A Low-Cost, Zero-Grid Windcatcher for a Warming World">
+<meta property="og:description" content="Interactive building-physics study: airflow, evaporative cooling, thermal mass, cost and CO₂ across 24 hot-climate cities.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F2ECDF; --card:#FFFDF8; --ink:#1D1B18; --ink-2:#47423A; --muted:#776F61;
+  --rule:#DCD3C1; --rule-2:#C9BDA6; --crimson:#8F1D21; --crimson-2:#B23A3E; --crimson-soft:rgba(143,29,33,.07);
+  --navy:#1F3A5F; --navy-soft:rgba(31,58,95,.08); --gold:#A8874F;
+  --ok:#2F6B4F; --acc:#5E7A2E; --warn:#A06A12; --bad:#9B2C2C;
+  --zA:#DCEBDF; --zB:#F4E6C6; --zC:#F1D7D4;
+  --serif:"EB Garamond","Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Noto Naskh Arabic","Songti SC",serif;
+  --sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic","PingFang SC",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15130F; --paper-2:#1D1A15; --card:#1B1813; --ink:#EDE6D6; --ink-2:#CFC6B4; --muted:#9C937F;
+    --rule:#3A342A; --rule-2:#4A4336; --crimson:#E07A7D; --crimson-2:#EE9497; --crimson-soft:rgba(224,122,125,.10);
+    --navy:#9DBCE6; --navy-soft:rgba(157,188,230,.10); --gold:#CDAE73;
+    --ok:#7CC39E; --acc:#B4CF7A; --warn:#E3B05A; --bad:#EE8B85;
+    --zA:#1F3328; --zB:#3A3120; --zC:#3D2423; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15130F; --paper-2:#1D1A15; --card:#1B1813; --ink:#EDE6D6; --ink-2:#CFC6B4; --muted:#9C937F;
+  --rule:#3A342A; --rule-2:#4A4336; --crimson:#E07A7D; --crimson-2:#EE9497; --crimson-soft:rgba(224,122,125,.10);
+  --navy:#9DBCE6; --navy-soft:rgba(157,188,230,.10); --gold:#CDAE73;
+  --ok:#7CC39E; --acc:#B4CF7A; --warn:#E3B05A; --bad:#EE8B85;
+  --zA:#1F3328; --zB:#3A3120; --zC:#3D2423; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:19px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--crimson);text-decoration-thickness:1px;text-underline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+@media (max-width:640px){.wrap{padding:0 16px} body{font-size:17.5px}}
+.sans{font-family:var(--sans)}
+.sc{font-variant:small-caps;letter-spacing:.06em}
+h1,h2,h3{font-weight:500;line-height:1.15;margin:0}
+p{margin:0 0 1em}
+
+/* Top bar */
+.topbar{border-bottom:1px solid var(--rule);background:var(--paper);font-family:var(--sans);font-size:13px}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:600;letter-spacing:.02em}
+.brand .seal{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--crimson);display:grid;place-items:center;color:var(--crimson);font-family:var(--serif);font-size:15px;font-weight:600}
+.prefs{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.prefs label{display:flex;align-items:center;gap:6px;color:var(--muted)}
+select,.btn,.seg button{font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--rule-2);border-radius:6px;padding:5px 8px}
+select:focus-visible,.btn:focus-visible,.seg button:focus-visible,.upg:focus-visible,input:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:6px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;cursor:pointer;padding:5px 10px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.btn{cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:7px 12px}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+:root[data-theme="dark"] .btn.primary{color:#1b1813}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#1b1813}}
+
+/* Masthead */
+.mast{padding-top:56px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
+.kicker{font-family:var(--sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson);font-weight:600}
+.mast h1{font-size:clamp(38px,5.6vw,66px);letter-spacing:-.01em;margin:14px 0 10px;max-width:16ch}
+.mast h1 em{font-style:italic;color:var(--crimson)}
+.subtitle{font-size:clamp(19px,2.2vw,24px);font-style:italic;color:var(--ink-2);max-width:56ch;margin:0 0 22px}
+.byline{font-family:var(--sans);font-size:13.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px}
+.byline b{color:var(--ink);font-weight:600}
+.double{height:4px;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:28px}
+
+/* TOC */
+.toc{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.toc .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;font-family:var(--sans);font-size:13px}
+.toc .wrap::-webkit-scrollbar{display:none}
+.toc a{white-space:nowrap;color:var(--ink-2);text-decoration:none;padding:12px 10px;border-bottom:2px solid transparent}
+.toc a:hover{color:var(--crimson)}
+.toc a.on{color:var(--crimson);border-bottom-color:var(--crimson)}
+.toc a span{color:var(--muted);margin-inline-end:4px}
+
+/* Sections */
+section.sec{padding:64px 0 8px}
+.sechead{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:28px}
+.sechead .num{font-family:var(--sans);font-size:12px;letter-spacing:.14em;color:var(--crimson);font-weight:600;min-width:34px}
+.sechead h2{font-size:clamp(28px,3.4vw,40px)}
+.lede{font-size:21px;color:var(--ink-2);max-width:68ch}
+.prose{max-width:70ch}
+.prose h3{font-size:24px;margin:32px 0 10px}
+.prose ul,.prose ol{padding-inline-start:1.2em;margin:0 0 1em}
+.prose li{margin:.3em 0}
+.dropcap::first-letter{float:inline-start;font-size:4.1em;line-height:.82;padding:6px 10px 0 0;color:var(--crimson);font-weight:500}
+[dir="rtl"] .dropcap::first-letter{padding:6px 0 0 10px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:1fr;gap:24px}}
+aside.margin{font-family:var(--sans);font-size:13.5px;line-height:1.55;color:var(--ink-2);border-inline-start:2px solid var(--crimson);padding-inline-start:16px}
+aside.margin h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--crimson);margin:0 0 8px}
+
+/* Abstract */
+.abstract{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:48px;padding:40px 0 8px}
+@media (max-width:900px){.abstract{grid-template-columns:1fr;gap:28px}}
+.abstract .label{font-family:var(--sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.abstract p{font-size:20px;text-align:justify;hyphens:auto}
+.keywords{font-family:var(--sans);font-size:13px;color:var(--muted)}
+.keywords b{color:var(--ink-2)}
+.figs{border:1px solid var(--rule);background:var(--card)}
+.figs .hd{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--rule)}
+.figs dl{margin:0;display:grid;grid-template-columns:1fr 1fr}
+.figs dl div{padding:14px 16px;border-bottom:1px solid var(--rule)}
+.figs dl div:nth-child(odd){border-inline-end:1px solid var(--rule)}
+.figs dt{font-family:var(--sans);font-size:11.5px;color:var(--muted)}
+.figs dd{margin:2px 0 0;font-size:28px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--ink)}
+.figs .ft{font-family:var(--sans);font-size:11.5px;color:var(--muted);padding:10px 16px}
+
+.callout{border:1px solid var(--rule);border-inline-start:4px solid var(--crimson);background:var(--crimson-soft);padding:18px 22px;margin:22px 0;font-size:21px;font-style:italic}
+.callout .sc{font-style:normal;font-family:var(--sans);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson);display:block;margin-bottom:6px;font-variant:normal}
+
+/* Model panel */
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:4px}
+.panel-hd{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--rule);font-family:var(--sans);font-size:13px}
+.panel-hd h3{font-family:var(--sans);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.panel-bd{padding:16px}
+.model-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:20px}
+.ctrl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.75fr);gap:20px;margin-top:20px}
+@media (max-width:980px){.model-grid,.ctrl-grid{grid-template-columns:1fr}}
+.legend{display:flex;gap:12px;color:var(--muted);font-size:12px;align-items:center;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:4px;vertical-align:-1px}
+.cv-wrap{direction:ltr;position:relative}
+canvas{width:100%;height:auto;display:block;border-radius:3px}
+.timebar{display:flex;align-items:center;gap:12px;margin-top:12px;font-family:var(--sans);font-size:13px}
+.timebar output{font-variant-numeric:tabular-nums;font-weight:600;min-width:46px}
+.timebar input{flex:1}
+input[type=range]{accent-color:var(--crimson);width:100%;margin:6px 0 0}
+.sans-ui{font-family:var(--sans);font-size:13.5px}
+.field{display:block;margin-bottom:14px}
+.field .row{display:flex;justify-content:space-between;gap:8px;color:var(--ink-2)}
+.field .row b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+.cities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.stat{border:1px solid var(--rule);padding:10px 12px}
+.stat .k{font-family:var(--sans);font-size:11.5px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat .v.sm{font-size:19px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.verdict{margin:10px 0;padding:10px;text-align:center;font-family:var(--sans);font-weight:600;font-size:14px;border:1px solid currentColor;border-radius:3px}
+.econ{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;border-top:1px solid var(--rule);padding-top:12px;margin-top:4px}
+.econ .k{font-family:var(--sans);font-size:11.5px;color:var(--muted)}
+.econ .v{font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+.econ .v.hl{color:var(--ok)}
+.note{font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:12px}
+.warnbox{font-family:var(--sans);font-size:13px;border:1px solid var(--warn);color:var(--ink-2);background:color-mix(in srgb,var(--warn) 9%,transparent);padding:10px 12px;margin-top:12px;border-radius:3px}
+.upgs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.upgs{grid-template-columns:1fr}}
+.upg{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--rule);padding:12px;display:flex;gap:12px;align-items:flex-start;font-family:var(--sans);transition:border-color .15s,background .15s,opacity .15s;border-radius:3px}
+.upg:hover{border-color:var(--ink-2)}
+.upg[aria-pressed="true"]{border-color:var(--crimson);background:var(--crimson-soft)}
+.upg[aria-pressed="false"]{opacity:.62}
+.upg .ic{width:34px;height:34px;flex:none;border:1px solid currentColor;border-radius:50%;display:grid;place-items:center;color:var(--crimson)}
+.upg[aria-pressed="false"] .ic{color:var(--muted)}
+.upg .ic svg{width:18px;height:18px}
+.upg .t{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:13.5px;color:var(--ink)}
+.upg .t span{color:var(--crimson);font-variant-numeric:tabular-nums;white-space:nowrap}
+.upg .d{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.chip{font-family:var(--sans);font-size:12.5px;padding:4px 9px;border:1px solid var(--rule-2);background:transparent;border-radius:999px;cursor:pointer;color:var(--ink-2)}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.toolrow{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Figures */
+figure{margin:0}
+figcaption{font-size:16px;color:var(--ink-2);margin-top:10px;max-width:80ch}
+figcaption b{font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson);margin-inline-end:6px}
+.fig-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:900px){.fig-grid{grid-template-columns:1fr}}
+.chart{direction:ltr;width:100%;height:auto;display:block}
+.chart text{font-family:var(--sans);font-size:11px;fill:var(--muted)}
+.chart .axis{stroke:var(--rule-2);stroke-width:1}
+.chart .grid{stroke:var(--rule);stroke-width:1}
+.chart .lbl{fill:var(--ink-2);font-size:11.5px}
+.chart .lbl-b{fill:var(--ink);font-size:12px;font-weight:600}
+.line-out{fill:none;stroke:var(--crimson);stroke-width:2;stroke-dasharray:5 4}
+.line-sup{fill:none;stroke:var(--gold);stroke-width:2}
+.line-in{fill:none;stroke:var(--navy);stroke-width:3}
+.line-feel{fill:none;stroke:var(--navy);stroke-width:1.6;stroke-dasharray:1.5 3.5;stroke-linecap:round}
+.band{fill:var(--ok);opacity:.12}
+.marker{stroke:var(--ink);stroke-width:1;stroke-dasharray:2 3}
+.bar{fill:var(--navy)}
+.bar.top{fill:var(--crimson)}
+.zA{fill:var(--zA)} .zB{fill:var(--zB)} .zC{fill:var(--zC)}
+.dot{fill:var(--ink-2);stroke:var(--card);stroke-width:1.5;cursor:pointer}
+.dot:hover{fill:var(--crimson)}
+.ring{fill:none;stroke:var(--crimson);stroke-width:2.5}
+.chart-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--sans);font-size:12px;color:var(--ink-2);margin-bottom:8px}
+.chart-legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-inline-end:6px}
+.chart-legend i.sw{width:12px;height:12px;border:0;border-radius:2px;vertical-align:-2px}
+
+/* Equations */
+.eq{display:flex;justify-content:space-between;align-items:center;gap:16px;background:var(--paper-2);border:1px solid var(--rule);padding:12px 18px;margin:12px 0 16px;font-size:20px;font-style:italic;overflow-x:auto}
+.eq .n{font-style:normal;font-family:var(--sans);font-size:12px;color:var(--muted)}
+.eq sub,.eq sup{font-size:.68em}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:13.5px}
+caption{caption-side:top;text-align:start;font-family:var(--serif);font-size:16px;color:var(--ink-2);padding:0 0 10px}
+caption b{font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson);margin-inline-end:6px}
+th,td{padding:9px 10px;text-align:start;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-weight:600;color:var(--ink-2);font-size:12px;border-bottom:1px solid var(--ink);white-space:nowrap}
+td.n,th.n{text-align:end;font-variant-numeric:tabular-nums;white-space:nowrap}
+tfoot td{font-weight:600;border-bottom:0}
+#atlasTbl tbody tr{cursor:pointer}
+#atlasTbl tbody tr:hover{background:var(--navy-soft)}
+#atlasTbl tbody tr.cur{background:var(--crimson-soft)}
+#atlasTbl th button{all:unset;cursor:pointer}
+#atlasTbl th button:focus-visible{outline:2px solid var(--crimson)}
+.zone{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:var(--ink)}
+.zone.A{background:var(--zA)} .zone.B{background:var(--zB)} .zone.C{background:var(--zC)}
+.muted{color:var(--muted)}
+
+/* Roadmap */
+.timeline{list-style:none;padding:0;margin:0;border-inline-start:1px solid var(--rule-2)}
+.timeline li{position:relative;padding:0 0 26px 28px}
+[dir="rtl"] .timeline li{padding:0 28px 26px 0}
+.timeline li::before{content:"";position:absolute;inset-inline-start:-6px;top:8px;width:11px;height:11px;border-radius:50%;background:var(--paper);border:2px solid var(--crimson)}
+.timeline h4{font-size:21px;font-weight:500;margin:0 0 4px}
+.timeline .when{font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson);font-weight:600}
+.timeline p{margin:4px 0 0;color:var(--ink-2)}
+
+/* References */
+ol.refs{padding-inline-start:1.6em;font-size:16.5px;color:var(--ink-2)}
+ol.refs li{margin:0 0 .6em;padding-inline-start:.3em}
+ol.refs i{color:var(--ink)}
+pre.bib{font-family:var(--mono);font-size:12.5px;line-height:1.5;background:var(--paper-2);border:1px solid var(--rule);padding:14px 16px;overflow-x:auto;color:var(--ink-2);direction:ltr;text-align:left}
+
+footer{margin-top:72px;border-top:1px solid var(--ink);padding:24px 0 48px;font-family:var(--sans);font-size:12.5px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:13px;padding:8px 14px;border-radius:6px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media print{
+  @page{margin:16mm}
+  body{background:#fff;color:#000;font-size:11.5pt}
+  .topbar,.toc,.toolrow,.timebar,.no-print,#presetRow{display:none!important}
+  section.sec{padding-top:24px;break-inside:auto}
+  .panel,.figs,figure,table,.eq{break-inside:avoid}
+  .mast{padding-top:0}
+  a{color:#000;text-decoration:none}
+}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="seal" aria-hidden="true">E</span><span>EcoCatcher Project</span></div>
+    <div class="prefs i18n-scope">
+      <label><span data-i18n="lang">Language</span>
+        <select id="selLang" aria-label="Language"></select></label>
+      <span class="seg" role="group" aria-label="Units">
+        <button id="uMetric" type="button" data-i18n="metric">Metric</button>
+        <button id="uImperial" type="button" data-i18n="imperial">Imperial</button>
+      </span>
+      <label><span data-i18n="currency">Currency</span>
+        <select id="selCur" aria-label="Currency"></select></label>
+    </div>
+  </div>
+</div>
+
+<header class="wrap mast">
+  <div class="kicker">Independent Project · Building Physics &amp; Sustainable Design</div>
+  <h1>EcoCatcher: <em>a low-cost, zero-grid windcatcher</em> for a warming world</h1>
+  <p class="subtitle">Rebuilding the Persian <i>bâdgir</i> and Gulf <i>barjeel</i> with recycled, solar-powered parts — and testing, city by city, where it can replace air-conditioning.</p>
+  <div class="byline">
+    <span><b>Maksud Yusuf</b></span>
+    <span>Baku, Azerbaijan</span>
+    <span>Version 2.0 · October 2026</span>
+    <span>Independent project</span>
+  </div>
+  <div class="double"></div>
+
+  <div class="abstract" id="abstract">
+    <div>
+      <div class="label">Project summary</div>
+      <p>Space cooling is among the fastest-growing sources of electricity demand on Earth, and the growth is concentrated in hot countries whose grids still burn fossil fuels. This project revisits the windcatcher, a passive-cooling tower used across Iran, the Arabian Gulf, Egypt and Pakistan for centuries, and asks whether six inexpensive upgrades — an evaporative pad fed by greywater, a solar chimney, solar-powered fans, sensor-driven louvers, dust mesh and a thermal-mass lining — can make it a credible substitute for air-conditioning in a single room. A transparent physics model combining wind-pressure and stack-driven ventilation, evaporative cooling, a room heat balance and first-order thermal mass is run hour by hour against the ASHRAE 55 adaptive comfort criterion. For a simulated Riyadh summer day (peak <span data-k="a-out">–</span>), the full design holds the room's peak at <span data-k="a-in">–</span>, stays inside the comfort band for <span data-k="a-ch">–</span> of 24 hours, and avoids roughly <span data-k="a-co2">–</span> of CO₂ a year for a build cost of <span data-k="a-cost">–</span>. Screening 24 hot-climate cities shows that the design works well in hot-dry regions, needs hybrid operation in moderately humid ones, and should not be relied on in humid tropical climates.</p>
+      <p class="keywords"><b>Keywords:</b> passive cooling · windcatcher · evaporative cooling · natural ventilation · thermal comfort · low-cost housing · climate adaptation</p>
+    </div>
+    <div class="figs" aria-live="polite">
+      <div class="hd">Key figures · Riyadh, full design</div>
+      <dl>
+        <div><dt>Peak outdoor</dt><dd data-k="k-out">–</dd></div>
+        <div><dt>Peak indoor</dt><dd data-k="k-in">–</dd></div>
+        <div><dt>Comfort hours</dt><dd data-k="k-ch">–</dd></div>
+        <div><dt>Grid electricity</dt><dd>0 kWh</dd></div>
+        <div><dt>Build cost</dt><dd data-k="k-cost">–</dd></div>
+        <div><dt>CO₂ avoided / yr</dt><dd data-k="k-co2">–</dd></div>
+        <div><dt>Payback</dt><dd data-k="k-pay">–</dd></div>
+        <div><dt>Pad water / day</dt><dd data-k="k-water">–</dd></div>
+      </dl>
+      <div class="ft">Computed live by the model in §2. Change units or currency at the top of the page.</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <div class="wrap" id="tocLinks">
+    <a href="#intro"><span>1</span>Introduction</a>
+    <a href="#model"><span>2</span>Interactive model</a>
+    <a href="#method"><span>3</span>Method</a>
+    <a href="#results"><span>4</span>Results</a>
+    <a href="#atlas"><span>5</span>Global atlas</a>
+    <a href="#materials"><span>6</span>Materials</a>
+    <a href="#limits"><span>7</span>Limitations</a>
+    <a href="#roadmap"><span>8</span>Roadmap</a>
+    <a href="#refs"><span>9</span>References</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- 1 Introduction -->
+<section class="sec" id="intro">
+  <div class="sechead"><span class="num">§ 1</span><h2>Introduction</h2></div>
+  <div class="cols">
+    <div class="prose">
+      <p class="dropcap">Cooling is the fastest-growing use of energy in buildings. The International Energy Agency estimates that air-conditioners and electric fans already account for roughly a tenth of all electricity consumed worldwide, and that the global stock of air-conditioners could roughly triple by 2050 [1]. Most of that growth will happen in hot countries where grids still run largely on fossil fuels and where many households can afford neither the units nor the bills. Rising heat makes the problem self-reinforcing: every new air-conditioner exhausts heat into the street and carbon into the atmosphere.</p>
+      <p>Long before electricity, builders across the Middle East and South Asia solved the same problem with architecture. The windcatcher — <i>bâdgir</i> in Persian, <i>barjeel</i> in Gulf Arabic, <i>malqaf</i> in Egypt — is a tower that rises above the roof to catch the prevailing breeze, where wind is stronger and air is cleaner, and funnels it down into the rooms below, while openings on the leeward side pull stale air out [5, 6]. The historic city of Yazd in central Iran, inscribed on the UNESCO World Heritage List in 2017, is still crowned by hundreds of them [11].</p>
+      <p>Traditional towers have three well-known weaknesses. They do little when the air is still; they let in dust, insects and birds; and in very hot weather they move hot air rather than cool air unless water is added. Modern engineering literature has proposed fixes — evaporative columns, solar chimneys, mechanical assistance [7, 12] — but most are designed for commercial buildings and priced accordingly. EcoCatcher asks whether the same ideas can be delivered at the scale and budget of a single family room.</p>
+      <div class="callout"><span class="sc">Design challenge</span>Can a traditional windcatcher, upgraded only with low-cost, recycled and solar-powered parts, keep a typical 20 m² room within the adaptive comfort band through a hot-climate summer day — without drawing any electricity from the grid?</div>
+      <h3>What this project delivers</h3>
+      <ol>
+        <li><b>A modular design</b> of six upgrades, each under US$45 and buildable with hand tools from salvaged or locally available materials (§6).</li>
+        <li><b>An open, transparent physics model</b> combining wind pressure, stack effect, evaporative cooling and thermal mass, running hour by hour in any browser, offline, in seven languages (§2–3).</li>
+        <li><b>A global screening</b> of 24 hot-climate cities that identifies where the design works on its own, where it needs hybrid operation, and where it should not be used (§4–5).</li>
+        <li><b>A validation plan</b> with instruments, metrics and pass criteria so the model can be tested against a physical prototype (§7).</li>
+      </ol>
+    </div>
+    <aside class="margin">
+      <h4>Why it matters</h4>
+      <p>Passive towers need no refrigerant, no compressor and no grid connection. Where they work, they cut both the electricity bill and the peak load on fragile grids during heatwaves — the hours when blackouts are most dangerous.</p>
+      <h4 style="margin-top:18px">Terminology</h4>
+      <p><b>Wet-bulb temperature</b> — the lowest temperature air can reach by evaporating water into it. The gap between air and wet-bulb temperature sets the limit of evaporative cooling.</p>
+      <p><b>Feels like</b> — apparent temperature: air temperature corrected for humidity, because humid air at 28 °C feels hotter than dry air at 28 °C.</p>
+      <p><b>ACH</b> — air changes per hour: how many times the room's volume of air is replaced each hour.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- 2 Model -->
+<section class="sec" id="model">
+  <div class="sechead"><span class="num">§ 2</span><h2>Interactive model</h2></div>
+  <p class="lede prose">Choose a city or set your own climate, switch upgrades on and off, and move through the day. Every number on this page — including the abstract — is recomputed by the same model.</p>
+  <p class="muted sans i18n-scope" style="font-size:14px;margin:0" data-i18n="interface_note">Interactive model available in 7 languages; the report text is in English.</p>
+
+  <div class="toolrow no-print i18n-scope" id="presetRow" style="margin:18px 0 14px">
+    <button class="btn" id="presetTrad" type="button" data-i18n="trad">Traditional barjeel</button>
+    <button class="btn primary" id="presetEco" type="button" data-i18n="eco">EcoCatcher (all upgrades)</button>
+    <button class="btn" id="btnShare" type="button" data-i18n="share">Copy scenario link</button>
+    <button class="btn" id="btnPrint" type="button" data-i18n="print">Print / PDF</button>
+  </div>
+
+  <div class="model-grid i18n-scope">
+    <div class="panel">
+      <div class="panel-hd">
+        <h3 data-i18n="xsec">Live cross-section</h3>
+        <div class="legend"><span><i style="background:#3b82f6"></i><span data-i18n="cool">cool</span></span><span><i style="background:#f59e0b"></i><span data-i18n="warm">warm</span></span><span><i style="background:#ef4444"></i><span data-i18n="hot">hot</span></span></div>
+      </div>
+      <div class="panel-bd">
+        <div class="cv-wrap"><canvas id="cv" role="img" aria-label="Animated cross-section of the windcatcher and room"></canvas></div>
+        <div class="timebar">
+          <span data-i18n="time">Time of day</span>
+          <input id="sHour" type="range" min="0" max="23" step="1" aria-label="Time of day">
+          <output id="vHour">15:00</output>
+          <button class="btn no-print" id="btnPlay" type="button" data-i18n="play">Play day</button>
+        </div>
+        <div id="humidWarn" class="warnbox" hidden data-i18n-html="humid"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hd"><h3 data-i18n="res_title">Results at selected hour</h3><span class="muted" id="resWhere"></span></div>
+      <div class="panel-bd">
+        <div class="stats">
+          <div class="stat"><div class="k" data-i18n="outside">Outside</div><div class="v" id="rOut">–</div></div>
+          <div class="stat"><div class="k" data-i18n="indoor">Indoor (est.)</div><div class="v" id="rIn">–</div></div>
+          <div class="stat"><div class="k" data-i18n="airflow">Airflow</div><div class="v sm" id="rQ">–</div></div>
+          <div class="stat"><div class="k" data-i18n="supply">Supply air</div><div class="v sm" id="rTs">–</div></div>
+          <div class="stat"><div class="k" data-i18n="chours">Comfortable hours</div><div class="v sm" id="rCh">–</div></div>
+          <div class="stat"><div class="k" data-i18n="water">Pad water use</div><div class="v sm" id="rW">–</div></div>
+          <div class="stat"><div class="k" data-i18n="rhin">Indoor humidity</div><div class="v sm" id="rRHin">–</div></div>
+          <div class="stat"><div class="k" data-i18n="feels">Feels like</div><div class="v sm" id="rFeel">–</div></div>
+        </div>
+        <div class="verdict" id="rComfort" aria-live="polite">–</div>
+        <div class="sans-ui" style="font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px" data-i18n="econ_title">Annual economics</div>
+        <div class="econ">
+          <div><div class="k" data-i18n="cost">Build cost</div><div class="v" id="rCost">–</div></div>
+          <div><div class="k" data-i18n="payback">Payback</div><div class="v" id="rPay">–</div></div>
+          <div><div class="k" data-i18n="kwh">AC energy saved / yr</div><div class="v" id="rKwh">–</div></div>
+          <div><div class="k" data-i18n="money">Money saved / yr</div><div class="v" id="rMoney">–</div></div>
+          <div><div class="k" data-i18n="co2">CO₂ avoided / yr</div><div class="v" id="rCo2">–</div></div>
+          <div><div class="k" data-i18n="gridUse">Grid electricity used</div><div class="v hl">0 kWh</div></div>
+        </div>
+        <p class="note"><span data-i18n="econ_note">Mixed-mode assumption.</span> <span data-i18n="disclaimer">Simplified teaching model.</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-grid i18n-scope">
+    <div class="panel">
+      <div class="panel-hd"><h3 data-i18n="climate">Climate &amp; context</h3></div>
+      <div class="panel-bd sans-ui">
+        <label class="field" style="margin-bottom:10px"><div class="row"><span data-i18n="city">Location</span></div>
+          <select id="selCity" style="width:100%;margin-top:6px"></select></label>
+        <div class="field"><div class="row"><span data-i18n="tmax">Peak outdoor temperature</span><b id="vT"></b></div><input id="sT" type="range" min="25" max="50" step="0.5"></div>
+        <div class="field"><div class="row"><span data-i18n="rh">Humidity at peak</span><b id="vRH"></b></div><input id="sRH" type="range" min="5" max="90" step="1"></div>
+        <div class="field"><div class="row"><span data-i18n="wind">Wind speed</span><b id="vV"></b></div><input id="sV" type="range" min="0" max="10" step="0.1"></div>
+        <div class="field"><div class="row"><span data-i18n="swing">Day–night swing</span><b id="vSw"></b></div><input id="sSw" type="range" min="4" max="20" step="0.5"></div>
+        <div class="field"><div class="row"><span data-i18n="area">Room floor area</span><b id="vA"></b></div><input id="sA" type="range" min="8" max="60" step="1"></div>
+        <div class="field"><div class="row"><span data-i18n="months">Cooling season</span><b id="vMo"></b></div><input id="sMo" type="range" min="1" max="12" step="1"></div>
+        <div class="field"><div class="row"><span data-i18n="price">Electricity price</span><b id="vP"></b></div><input id="sP" type="range" min="0.01" max="0.45" step="0.01"></div>
+        <div class="field" style="margin-bottom:0"><div class="row"><span data-i18n="grid">Grid carbon intensity</span><b id="vG"></b></div><input id="sG" type="range" min="0" max="1" step="0.01"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hd"><h3 data-i18n="upg_title">Modern upgrades — select to toggle</h3></div>
+      <div class="panel-bd"><div class="upgs" id="upgrades"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 Method -->
+<section class="sec" id="method">
+  <div class="sechead"><span class="num">§ 3</span><h2>Method</h2></div>
+  <div class="cols">
+    <div class="prose">
+      <p>The model is deliberately simple: every equation is printed here, every constant is listed in Table 1, and the complete source code is in this page. It is intended for comparing design options and climates, not for certifying a building. The day is simulated in 15-minute steps over four consecutive identical days so that the thermal-mass response settles; the fourth day is reported.</p>
+
+      <h3>3.1 Diurnal climate</h3>
+      <p>Outdoor temperature follows a cosine between the daily minimum and the peak at 15:00. Absolute humidity is held constant through the day, so relative humidity rises at night as the air cools — the physically consistent behaviour of a dry desert night. The dew point is found with the Magnus approximation [8], and wind is taken as 25 % weaker at night than in the afternoon.</p>
+      <div class="eq"><span>T(h) = T<sub>max</sub> − ΔT<sub>day</sub>/2 · [1 − cos(2π(h − 15)/24)]</span><span class="n">(1)</span></div>
+
+      <h3>3.2 Airflow</h3>
+      <p>Wind-driven flow through the tower is proportional to wind speed and the square root of the pressure-coefficient difference between windward and leeward openings; stack-driven flow is proportional to the square root of the temperature rise in the exhaust shaft, which the solar chimney increases in sunlight [9, 12]. The two combine in quadrature, and the solar fans add a fixed flow in daylight.</p>
+      <div class="eq"><span>Q<sub>w</sub> = C<sub>d</sub> A v √ΔC<sub>p</sub>,&nbsp;&nbsp; Q<sub>s</sub> = C<sub>d</sub> A √(2gHΔT<sub>s</sub> / T),&nbsp;&nbsp; Q = √(Q<sub>w</sub>² + Q<sub>s</sub>²) + Q<sub>fan</sub></span><span class="n">(2)</span></div>
+
+      <h3>3.3 Evaporative cooling</h3>
+      <p>Air passing the wet pad approaches its wet-bulb temperature, computed with Stull's empirical formula [2], with a pad effectiveness ε. Without a pad, contact with the cool tower walls gives a small effect (ε = 0.10). The water evaporated is the sensible heat removed divided by the latent heat of vaporisation.</p>
+      <div class="eq"><span>T<sub>sup</sub> = T − ε (T − T<sub>wb</sub>),&nbsp;&nbsp; ṁ<sub>water</sub> = ρ c<sub>p</sub> Q (T − T<sub>sup</sub>) / h<sub>fg</sub></span><span class="n">(3)</span></div>
+
+      <h3>3.4 Room heat balance and thermal mass</h3>
+      <p>Internal and solar gains <i>G</i> (people, devices and sun through the envelope) warm the supply air on its way through the room, giving a steady-state room temperature. The real room lags behind that target with a time constant τ that is short for a lightweight room and long for a clay or rammed-earth lining, which is how thermal mass carries night-time coolness into the afternoon.</p>
+      <div class="eq"><span>T<sub>ss</sub> = T<sub>sup</sub> + G / (ρ c<sub>p</sub> Q),&nbsp;&nbsp; dT<sub>in</sub>/dt = (T<sub>ss</sub> − T<sub>in</sub>) / τ</span><span class="n">(4)</span></div>
+
+      <h3>3.5 Comfort criterion</h3>
+      <p>Naturally ventilated buildings are judged with the ASHRAE 55 adaptive model [3, 4], under which people accept warmer rooms when the outdoor climate is warmer. The neutral temperature depends on the prevailing mean outdoor temperature, and the 80 % acceptability band extends 3.5 K either side.</p>
+      <div class="eq"><span>T<sub>comf</sub> = 0.31 T<sub>out,mean</sub> + 17.8,&nbsp;&nbsp; T<sub>upper,80</sub> = T<sub>comf</sub> + 3.5</span><span class="n">(5)</span></div>
+      <p>Evaporative cooling trades heat for moisture, and the adaptive model alone would rate a cool but saturated room as comfortable. The room's vapour pressure <i>e</i> is therefore taken from the supply air (evaporation follows a line of constant wet-bulb temperature), and comfort is judged on Steadman's still-air apparent temperature [13], which penalises humid air and rewards dry air.</p>
+      <div class="eq"><span>e = e<sub>s</sub>(T<sub>wb</sub>) − γ (T<sub>sup</sub> − T<sub>wb</sub>),&nbsp;&nbsp; T<sub>feel</sub> = T<sub>in</sub> + 0.33 e − 4.0&nbsp;&nbsp; (e in hPa)</span><span class="n">(5b)</span></div>
+      <p>Climate zones in Figure 3 and Table 2 follow the peak-hour wet-bulb temperature, the usual screening rule for direct evaporative cooling: <b>A</b> up to 22.5 °C, <b>B</b> 22.5–25.5 °C, <b>C</b> above 25.5 °C.</p>
+
+      <h3>3.6 Energy, cost and carbon</h3>
+      <p>The baseline is a sealed room cooled by a split air-conditioner to 25 °C. EcoCatcher is assumed to run in <i>mixed mode</i>: the air-conditioner switches on only in hours when the room leaves the comfort band. The fraction of cooling load avoided is scaled to a baseline annual consumption, then multiplied by the local tariff and grid carbon intensity [10].</p>
+      <div class="eq"><span>f = 1 − Σ<sub>T<sub>in</sub>&gt;T<sub>upper</sub></sub>(T<sub>in</sub> − 25) / Σ(T − 25)<sup>+</sup>,&nbsp;&nbsp; E<sub>saved</sub> = f · e<sub>AC</sub> · A<sub>floor</sub> · months</span><span class="n">(6)</span></div>
+    </div>
+    <aside class="margin">
+      <h4>Reproducibility</h4>
+      <p>Open the page source: the functions <code>hourly()</code> and <code>simulate()</code> contain the complete model in under 80 lines. Every scenario can be shared exactly with the “Copy scenario link” button.</p>
+      <h4 style="margin-top:18px">Model status</h4>
+      <p>Parameters are taken from the literature or chosen as plausible values for a small tower. They are <b>not yet calibrated</b> against measurements; §7 sets out how they will be.</p>
+    </aside>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:28px">
+    <table>
+      <caption><b>Table 1</b>Model parameters and assumptions.</caption>
+      <thead><tr><th>Symbol</th><th>Meaning</th><th class="n">Value</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>Tower opening area (0.6 × 0.6 m)</td><td class="n">0.36 m²</td><td>Design choice, single-room scale</td></tr>
+        <tr><td>C<sub>d</sub></td><td>Discharge coefficient</td><td class="n">0.60</td><td>Typical sharp-edged opening [9]</td></tr>
+        <tr><td>√ΔC<sub>p</sub></td><td>Root of pressure-coefficient difference</td><td class="n">0.55</td><td>Mid-range of reported wind-tower values [6]</td></tr>
+        <tr><td>H</td><td>Stack height, room to tower outlet</td><td class="n">6 m</td><td>3 m tower above a 3 m room</td></tr>
+        <tr><td>ΔT<sub>s</sub></td><td>Exhaust temperature rise</td><td class="n">1.5 K (+9 K × sun with chimney)</td><td>Solar-chimney studies [12]</td></tr>
+        <tr><td>Q<sub>fan</sub></td><td>Solar fan flow (3 × 140 mm fans)</td><td class="n">0.12 m³/s, daylight only</td><td>Free-air rating; no battery</td></tr>
+        <tr><td>ε</td><td>Pad effectiveness / wall effect</td><td class="n">0.70 / 0.10</td><td>Low-cost fibre pads, conservative</td></tr>
+        <tr><td>—</td><td>Pad, mesh, louver flow factors</td><td class="n">×0.85, ×0.92, ×1.20 (×1.45 night)</td><td>Assumed resistance / control gain</td></tr>
+        <tr><td>G</td><td>Internal + solar gains</td><td class="n">25 + 30 × sun W/m²</td><td>Two occupants, devices, sun on envelope</td></tr>
+        <tr><td>τ</td><td>Room time constant (light / heavy)</td><td class="n">2.5 h / 10 h</td><td>Order-of-magnitude for earth walls</td></tr>
+        <tr><td>γ</td><td>Psychrometer constant (sea level)</td><td class="n">0.667 hPa/K</td><td>Standard psychrometry</td></tr>
+        <tr><td>e<sub>AC</sub></td><td>Baseline AC energy</td><td class="n">12.5 kWh/m² per month</td><td>≈ 1 500 kWh/yr for 20 m², 6 months</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 4 Results -->
+<section class="sec" id="results">
+  <div class="sechead"><span class="num">§ 4</span><h2>Results</h2></div>
+  <p class="lede prose">The three figures below update with the scenario selected in §2. They show what happens over a full day, which upgrades actually earn their cost, and where in the world the physics allows the design to work.</p>
+
+  <figure style="margin-top:24px">
+    <div class="chart-legend" id="leg24"></div>
+    <div id="chart24"></div>
+    <figcaption><b>Figure 1</b><span data-i18n="ch24">24-hour profile</span> — <span id="cap24"></span> The indoor curve lags and flattens the outdoor curve; the shaded band is the range of temperatures that 80 % of occupants find acceptable.</figcaption>
+  </figure>
+
+  <div class="fig-grid" style="margin-top:40px">
+    <figure>
+      <div id="chartAbl"></div>
+      <figcaption><b>Figure 2</b><span data-i18n="abl">Ablation</span>. <span data-i18n="abl_sub"></span>. Effects interact, so they do not add up exactly.</figcaption>
+    </figure>
+    <figure>
+      <div class="chart-legend" id="legSuit"></div>
+      <div id="chartSuit"></div>
+      <figcaption><b>Figure 3</b><span data-i18n="suit">Climate suitability map</span>. <span data-i18n="suit_sub"></span> Zone boundaries are lines of constant wet-bulb temperature (22.5 °C and 25.5 °C).</figcaption>
+    </figure>
+  </div>
+
+  <div class="prose" style="margin-top:36px">
+    <h3>Key findings</h3>
+    <ol>
+      <li><b>Humidity, not heat, decides feasibility.</b> A 46 °C afternoon in Kuwait is easier to cool than a 33 °C afternoon in Mumbai: the dry air has a far larger wet-bulb depression to exploit, and the extra moisture stays tolerable (Figure 3). In Dubai, Karachi, Mumbai and Singapore the room still feels too hot, so the design should not be used there without dehumidification.</li>
+      <li><b>The evaporative pad and the thermal-mass lining do most of the work</b> in hot-dry climates (Figure 2). Together they cost about US$65, roughly a quarter of the full design.</li>
+      <li><b>The solar chimney and fans matter most on calm days.</b> With wind below about 1 m/s they supply most of the airflow, which is why they are kept despite small effects in windy cities such as Baku.</li>
+      <li><b>Payback depends more on tariffs than on climate.</b> Heavily subsidised electricity in parts of the Gulf and Iran stretches payback past a decade even where the cooling is excellent; the carbon and grid-peak benefits remain.</li>
+      <li><b>Water is the hidden cost.</b> In a Riyadh summer the pad evaporates about <span data-k="a-water">–</span> a day — similar to a household's entire greywater output. The design therefore specifies greywater or air-conditioner condensate rather than drinking water, and the controller should stop wetting the pad whenever the room is already comfortable.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 5 Atlas -->
+<section class="sec" id="atlas">
+  <div class="sechead"><span class="num">§ 5</span><h2 data-i18n="atlas">Global atlas</h2></div>
+  <p class="lede prose" data-i18n="atlas_sub">Full EcoCatcher design, 20 m² room.</p>
+  <div class="tbl-wrap" style="margin-top:20px">
+    <table id="atlasTbl">
+      <caption><b>Table 2</b>Screening of 24 hot-climate locations under the full design. Select a column heading to sort.</caption>
+      <thead><tr id="atlasHead"></tr></thead>
+      <tbody id="atlasBody"></tbody>
+    </table>
+  </div>
+  <p class="note" style="font-size:13px">Climate inputs are indicative design-day values for the hottest month (peak temperature, afternoon humidity, typical wind), and tariffs and grid intensities are rounded national or regional figures. They are suitable for screening, not design. For a real site, replace them with an EPW weather file and the local tariff.</p>
+</section>
+
+<!-- 6 Materials -->
+<section class="sec" id="materials">
+  <div class="sechead"><span class="num">§ 6</span><h2>Materials &amp; cost</h2></div>
+  <div class="cols">
+    <div>
+      <div class="tbl-wrap">
+        <table>
+          <caption><b>Table 3</b>Bill of materials for the configuration selected in §2.</caption>
+          <thead><tr><th>Component</th><th>Material choice</th><th class="n">Cost</th></tr></thead>
+          <tbody id="bom"></tbody>
+          <tfoot><tr><td>Total</td><td></td><td class="n" id="bomTotal"></td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+    <aside class="margin">
+      <h4>Design principles</h4>
+      <p><b>Salvage first.</b> Every component has a reclaimed or agricultural-waste option.</p>
+      <p><b>Hand tools only.</b> No welding or machining; the electronics plug together without soldering.</p>
+      <p><b>Fail passive.</b> If the electronics fail, the louvers rest open and the tower still works as a traditional barjeel.</p>
+      <p><b>One tower, one room.</b> Sized for 15–30 m²; larger homes use several towers.</p>
+    </aside>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:32px">
+    <table>
+      <caption><b>Table 4</b>Regional material substitutions — designing for local supply chains.</caption>
+      <thead><tr><th>Component</th><th>Gulf &amp; Middle East</th><th>South Asia</th><th>Sub-Saharan Africa</th><th>Latin America</th><th>Mediterranean · Australia · US Southwest</th></tr></thead>
+      <tbody>
+        <tr><td><b>Tower body</b></td><td>Compressed earth blocks, gypsum plaster</td><td>Reclaimed fired brick, lime plaster</td><td>Stabilised earth or laterite blocks</td><td>Adobe, bahareque (wattle and daub)</td><td>Rammed earth, reclaimed brick</td></tr>
+        <tr><td><b>Evaporative pad</b></td><td>Date-palm fibre</td><td>Jute, or vetiver (<i>khus</i>) mats</td><td>Coconut coir, sisal</td><td>Agave or sisal fibre, coir</td><td>Aspen wood-wool cooler pads</td></tr>
+        <tr><td><b>Frame &amp; slats</b></td><td>Reclaimed timber, palm-rib (<i>jareed</i>)</td><td>Bamboo</td><td>Bamboo, eucalyptus poles</td><td>Guadua bamboo</td><td>Reclaimed timber</td></tr>
+        <tr><td><b>Chimney absorber</b></td><td>Reused aluminium or tin sheet</td><td>Flattened oil tins</td><td>Corrugated roofing offcuts</td><td>Galvanised sheet offcuts</td><td>Reused steel roofing</td></tr>
+        <tr><td><b>Pad water</b></td><td>Air-conditioner condensate, ablution greywater</td><td>Bath and kitchen greywater, rainwater</td><td>Harvested rainwater</td><td>Greywater, rainwater</td><td>Rainwater, greywater</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7 Limitations -->
+<section class="sec" id="limits">
+  <div class="sechead"><span class="num">§ 7</span><h2>Limitations &amp; validation plan</h2></div>
+  <div class="cols">
+    <div class="prose">
+      <p>An honest model states where it may be wrong. The most important limitations, roughly in order of how much they could change the conclusions:</p>
+      <ol>
+        <li><b>Uncalibrated parameters.</b> Discharge coefficient, pressure coefficients and pad effectiveness are taken from the literature, not measured on this tower. Real towers vary widely with geometry and wind direction [6, 7].</li>
+        <li><b>Steady, one-dimensional airflow.</b> The model ignores gusts, changes in wind direction, and short-circuiting, where incoming air leaves through the leeward opening without reaching the room. Computational fluid dynamics (CFD) or wind-tunnel tests are needed to quantify it.</li>
+        <li><b>Indoor humidity is approximated.</b> The room takes the supply air's vapour pressure; moisture from occupants, cooking and plants is ignored. The humidity penalty uses Steadman's apparent temperature, which is not part of ASHRAE 55, so humid-climate comfort results remain uncertain.</li>
+        <li><b>Adaptive comfort outside its range.</b> ASHRAE 55 defines the adaptive model only for prevailing mean outdoor temperatures up to 33.5 °C; hotter cases are clamped to that limit [3].</li>
+        <li><b>Idealised climate.</b> One design day per city stands in for a whole season. Heatwaves, dust storms and humid spells are not represented.</li>
+        <li><b>Water quality and hygiene.</b> Greywater on a pad needs filtering and regular drying cycles to prevent odour and microbial growth. The design avoids aerosol sprays, but the risk is not zero.</li>
+        <li><b>Embodied carbon and cost.</b> Prices are indicative, and the carbon in the materials themselves is not yet counted.</li>
+      </ol>
+    </div>
+    <aside class="margin">
+      <h4>What the model is for</h4>
+      <p>Comparing options — this upgrade or that one, this city or that one — is far more reliable than any single absolute number. Treat temperatures as ±2 °C until the model is validated.</p>
+    </aside>
+  </div>
+  <div class="tbl-wrap" style="margin-top:28px">
+    <table>
+      <caption><b>Table 5</b>Validation plan.</caption>
+      <thead><tr><th>Stage</th><th>Set-up</th><th>Instruments</th><th>Metric</th><th>Pass criterion</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 · Pad bench test</b></td><td>Pad in a duct with a box fan; dry and wet runs</td><td>Two SHT31 temperature–humidity sensors (±0.2 °C)</td><td>Measured effectiveness ε</td><td>Within ±0.10 of model</td></tr>
+        <tr><td><b>2 · Scale airflow</b></td><td>1:5 tower on a plywood room, fan as wind, incense smoke for visualisation</td><td>Vane or hot-wire anemometer</td><td>Q vs. v slope, i.e. C<sub>d</sub>√ΔC<sub>p</sub></td><td>Model error &lt; 25 %</td></tr>
+        <tr><td><b>3 · Full-scale pilot</b></td><td>One roof room, 2–4 summer weeks, tower vs. identical control room</td><td>ESP32 logger, 4 sensors, water meter, local weather station</td><td>Hourly indoor RMSE; litres per day</td><td>RMSE &lt; 1.5 °C</td></tr>
+        <tr><td><b>4 · Occupant comfort</b></td><td>Short survey of consenting occupants</td><td>ASHRAE 7-point thermal-sensation scale + logger</td><td>Votes between −1 and +1</td><td>≥ 80 % of votes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 8 Roadmap -->
+<section class="sec" id="roadmap">
+  <div class="sechead"><span class="num">§ 8</span><h2>Roadmap &amp; future work</h2></div>
+  <div class="cols">
+    <ol class="timeline">
+      <li><div class="when">Phase I · Prototype</div><h4>Build and instrument a 1:5 model</h4><p>Plywood room, earth-plaster lining, removable pad. Log temperature, humidity and airflow every minute with an ESP32.</p></li>
+      <li><div class="when">Phase II · Calibrate</div><h4>Fit the model to measurements</h4><p>Estimate ε and C<sub>d</sub>√ΔC<sub>p</sub> from data, report the error before and after calibration, and publish the dataset openly with a DOI.</p></li>
+      <li><div class="when">Phase III · Higher fidelity</div><h4>CFD and full-year simulation</h4><p>Model the tower in OpenFOAM or SimScale to quantify short-circuiting. Run a full year with real EPW weather files in EnergyPlus or Ladybug Tools.</p></li>
+      <li><div class="when">Phase IV · Pilot</div><h4>One real room, one real summer</h4><p>Install on a school or community building on the Absheron peninsula and compare it with an identical control room.</p></li>
+      <li><div class="when">Phase V · Share</div><h4>Open-source kit and publication</h4><p>A multilingual build guide, a peer-reviewed student paper, and science-fair entries. Partner with NGOs working on heat resilience in informal housing.</p></li>
+    </ol>
+    <aside class="margin">
+      <h4>Open questions</h4>
+      <p>Can a desiccant stage (salt-impregnated pad, regenerated by the solar chimney) extend the design to humid coasts?</p>
+      <p>How should a tower be sized for a whole flat or apartment block, rather than a single room?</p>
+      <p>What is the lifetime water and carbon footprint compared with an inverter air-conditioner on a decarbonising grid?</p>
+    </aside>
+  </div>
+</section>
+
+<!-- 9 References -->
+<section class="sec" id="refs">
+  <div class="sechead"><span class="num">§ 9</span><h2>References</h2></div>
+  <ol class="refs prose" style="max-width:none">
+    <li>International Energy Agency (2018). <i>The Future of Cooling: Opportunities for energy-efficient air conditioning.</i> Paris: IEA.</li>
+    <li>Stull, R. (2011). Wet-bulb temperature from relative humidity and air temperature. <i>Journal of Applied Meteorology and Climatology</i>, 50(11), 2267–2269.</li>
+    <li>ASHRAE (2020). <i>ANSI/ASHRAE Standard 55-2020: Thermal Environmental Conditions for Human Occupancy.</i> Atlanta: ASHRAE.</li>
+    <li>de Dear, R. J., &amp; Brager, G. S. (1998). Developing an adaptive model of thermal comfort and preference. <i>ASHRAE Transactions</i>, 104(1), 145–167.</li>
+    <li>Bahadori, M. N. (1985). An improved design of wind towers for natural ventilation and passive cooling. <i>Solar Energy</i>, 35(2), 119–129.</li>
+    <li>Hughes, B. R., Calautit, J. K., &amp; Ghani, S. A. (2012). The development of commercial wind towers for natural ventilation: A review. <i>Applied Energy</i>, 92, 606–627.</li>
+    <li>Montazeri, H., &amp; Azizian, R. (2008). Experimental study on natural ventilation performance of one-sided wind catcher. <i>Building and Environment</i>, 43(12), 2193–2202.</li>
+    <li>Alduchov, O. A., &amp; Eskridge, R. E. (1996). Improved Magnus form approximation of saturation vapor pressure. <i>Journal of Applied Meteorology</i>, 35(4), 601–609.</li>
+    <li>CIBSE (2005). <i>AM10: Natural Ventilation in Non-Domestic Buildings.</i> London: Chartered Institution of Building Services Engineers.</li>
+    <li>Ember (2024). <i>Global Electricity Review 2024</i> and yearly electricity data. London: Ember.</li>
+    <li>UNESCO World Heritage Centre (2017). <i>Historic City of Yazd</i> (inscription 1544).</li>
+    <li>Bansal, N. K., Mathur, R., &amp; Bhandari, M. S. (1994). A study of solar chimney assisted wind tower system for natural ventilation in buildings. <i>Building and Environment</i>, 29(4), 495–500.</li>
+    <li>Steadman, R. G. (1994). Norms of apparent temperature in Australia. <i>Australian Meteorological Magazine</i>, 43, 1–16.</li>
+  </ol>
+  <h3 style="font-size:22px;margin:32px 0 10px">Cite this project</h3>
+  <pre class="bib" id="bib">@misc{yusuf2026ecocatcher,
+  author       = {Yusuf, Maksud},
+  title        = {EcoCatcher: A Low-Cost, Zero-Grid Windcatcher for a Warming World},
+  year         = {2026},
+  month        = oct,
+  note         = {Interactive project edition, version 2.0},
+  howpublished = {Online}
+}</pre>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Maksud Yusuf · EcoCatcher Project</span>
+    <span>Self-contained page — works offline · 7 languages · metric &amp; imperial · 14 currencies · print-ready</span>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+<noscript><p class="wrap">The interactive model requires JavaScript. The report text above remains readable without it.</p></noscript>
+
+<script>
+"use strict";
+/* =====================================================================
+   1. Internationalisation
+   ===================================================================== */
+const LANGS = { en:'English', es:'Español', fr:'Français', ar:'العربية', zh:'中文', ru:'Русский', az:'Azərbaycanca' };
+const I18N = {
+en:{rhin:'Indoor humidity',feels:'Feels like',l_feel:'Indoor, feels like (humidity-adjusted)',lang:'Language',units:'Units',currency:'Currency',metric:'Metric',imperial:'Imperial',
+ xsec:'Live cross-section',cool:'cool',warm:'warm',hot:'hot',time:'Time of day',play:'Play day',pause:'Pause',
+ trad:'Traditional barjeel',eco:'EcoCatcher (all upgrades)',share:'Copy scenario link',copied:'Link copied',print:'Print / PDF',
+ climate:'Climate & context',city:'Location',custom:'Custom scenario',tmax:'Peak outdoor temperature',rh:'Humidity at peak',wind:'Wind speed',swing:'Day–night swing',area:'Room floor area',months:'Cooling season',price:'Electricity price',grid:'Grid carbon intensity',
+ upg_title:'Modern upgrades — select to toggle',
+ u_pad:'Evaporative pad',u_pad_d:'Jute or cellulose pad fed by greywater. Cools incoming air by evaporation — strongest in dry air.',
+ u_chimney:'Solar chimney',u_chimney_d:'Matte-black sheet behind glass. The sun heats exhaust air, strengthening the draft with no wind.',
+ u_fan:'Solar fans',u_fan_d:'10 W panel driving recycled 12 V PC fans. Guaranteed airflow on calm, sunny days.',
+ u_louvers:'Smart louvers',u_louvers_d:'ESP32 + sensor + micro-servos. Opens to the wind, shuts in sandstorms, flushes at night.',
+ u_mesh:'Insect & dust mesh',u_mesh_d:'Recycled fibreglass or stainless mesh. Keeps out sand, insects and birds (small flow loss).',
+ u_mass:'Thermal-mass walls',u_mass_d:'Clay plaster or rammed-earth lining. Stores night-time coolness and damps the daily peak.',
+ res_title:'Results at selected hour',outside:'Outside',indoor:'Indoor (est.)',airflow:'Airflow',supply:'Supply air',water:'Pad water use',chours:'Comfortable hours',
+ c_ok:'Comfortable',c_acc:'Acceptable',c_warm:'Warm',c_hot:'Too hot',
+ econ_title:'Annual economics',cost:'Build cost',payback:'Payback',kwh:'AC energy saved / yr',money:'Money saved / yr',co2:'CO₂ avoided / yr',gridUse:'Grid electricity used',
+ econ_note:'Mixed-mode assumption: AC runs only when the room leaves the comfort band.',
+ humid:'<b>Humid air.</b> Evaporative cooling is weak when humidity is high. Rely more on night flushing, thermal mass and the solar fans.',
+ u_months:'months',u_yrs:'years',u_mos:'months',u_day:'/ day',u_h:'h',never:'not reached',
+ ch24:'24-hour profile',l_out:'Outdoor',l_sup:'Supply air',l_in:'Indoor',l_band:'Comfort band (ASHRAE 55 adaptive, 80%)',
+ abl:'Ablation: what each upgrade contributes',abl_sub:'Rise in peak indoor temperature if the upgrade is removed from the full design',
+ suit:'Climate suitability map',suit_sub:'Outdoor temperature vs. humidity. Dots are atlas cities; the ring is your current scenario.',
+ zA:'Evaporative cooling effective',zB:'Hybrid: evaporative + fan + night flush',zC:'Night flush & thermal mass only',
+ atlas:'Global atlas',atlas_sub:'Full EcoCatcher design in a 20 m² room, using each city’s own climate, tariff and grid. Select a row to load it into the model.',
+ th_city:'Location',th_out:'Peak out',th_in:'Peak in',th_ch:'Comfort h/day',th_save:'Saved / yr',th_pay:'Payback',th_co2:'CO₂ / yr',th_zone:'Zone',
+ z_A:'Evaporative',z_B:'Hybrid',z_C:'Mass only',
+ cv_wind:'Wind',cv_pad:'Wet pad',cv_chim:'Solar chimney',cv_fan:'Solar fan',cv_panel:'Solar panel',cv_out:'Hot air out',cv_sup:'Supply',cv_room:'Room',cv_night:'Night flushing',
+ disclaimer:'Simplified teaching model — see Method and Limitations before quoting numbers.',
+ interface_note:'Interactive model available in 7 languages; the report text is in English.'},
+es:{rhin:'Humedad interior',feels:'Sensación',l_feel:'Interior, sensación térmica (ajustada por humedad)',lang:'Idioma',units:'Unidades',currency:'Moneda',metric:'Métrico',imperial:'Imperial',
+ xsec:'Corte transversal en vivo',cool:'fresco',warm:'templado',hot:'caliente',time:'Hora del día',play:'Reproducir día',pause:'Pausa',
+ trad:'Barjeel tradicional',eco:'EcoCatcher (todas las mejoras)',share:'Copiar enlace del escenario',copied:'Enlace copiado',print:'Imprimir / PDF',
+ climate:'Clima y contexto',city:'Ubicación',custom:'Escenario personalizado',tmax:'Temperatura exterior máxima',rh:'Humedad en el pico',wind:'Velocidad del viento',swing:'Oscilación día–noche',area:'Superficie de la habitación',months:'Temporada de refrigeración',price:'Precio de la electricidad',grid:'Intensidad de carbono de la red',
+ upg_title:'Mejoras modernas — pulse para activar',
+ u_pad:'Panel evaporativo',u_pad_d:'Panel de yute o celulosa regado con aguas grises. Enfría el aire por evaporación; funciona mejor con aire seco.',
+ u_chimney:'Chimenea solar',u_chimney_d:'Chapa negra mate tras un vidrio. El sol calienta el aire de salida y refuerza el tiro sin viento.',
+ u_fan:'Ventiladores solares',u_fan_d:'Panel de 10 W con ventiladores de PC reciclados de 12 V. Caudal garantizado en días soleados sin viento.',
+ u_louvers:'Lamas inteligentes',u_louvers_d:'ESP32 + sensor + microservos. Se abren al viento, se cierran con tormentas de arena y ventilan de noche.',
+ u_mesh:'Malla contra insectos y polvo',u_mesh_d:'Malla reciclada de fibra de vidrio o acero. Impide el paso de arena, insectos y aves (ligera pérdida de caudal).',
+ u_mass:'Muros de inercia térmica',u_mass_d:'Revoque de arcilla o tierra apisonada. Almacena el frescor nocturno y amortigua el pico diario.',
+ res_title:'Resultados a la hora elegida',outside:'Exterior',indoor:'Interior (est.)',airflow:'Caudal de aire',supply:'Aire de impulsión',water:'Agua del panel',chours:'Horas confortables',
+ c_ok:'Confortable',c_acc:'Aceptable',c_warm:'Caluroso',c_hot:'Demasiado calor',
+ econ_title:'Economía anual',cost:'Coste de construcción',payback:'Amortización',kwh:'Energía de A/A ahorrada / año',money:'Ahorro / año',co2:'CO₂ evitado / año',gridUse:'Electricidad de la red',
+ econ_note:'Supuesto de modo mixto: el A/A solo funciona cuando la habitación sale de la banda de confort.',
+ humid:'<b>Aire húmedo.</b> La refrigeración evaporativa es débil con humedad alta. Confíe más en la ventilación nocturna, la inercia térmica y los ventiladores solares.',
+ u_months:'meses',u_yrs:'años',u_mos:'meses',u_day:'/ día',u_h:'h',never:'no se alcanza',
+ ch24:'Perfil de 24 horas',l_out:'Exterior',l_sup:'Aire de impulsión',l_in:'Interior',l_band:'Banda de confort (ASHRAE 55 adaptativo, 80 %)',
+ abl:'Ablación: aporte de cada mejora',abl_sub:'Aumento de la temperatura interior máxima si se elimina la mejora del diseño completo',
+ suit:'Mapa de idoneidad climática',suit_sub:'Temperatura exterior frente a humedad. Los puntos son ciudades del atlas; el anillo es su escenario actual.',
+ zA:'Refrigeración evaporativa eficaz',zB:'Híbrido: evaporativo + ventilador + ventilación nocturna',zC:'Solo ventilación nocturna e inercia térmica',
+ atlas:'Atlas mundial',atlas_sub:'Diseño EcoCatcher completo en una habitación de 20 m², con el clima, la tarifa y la red de cada ciudad. Pulse una fila para cargarla en el modelo.',
+ th_city:'Ubicación',th_out:'Máx. ext.',th_in:'Máx. int.',th_ch:'Horas conf./día',th_save:'Ahorro / año',th_pay:'Amortización',th_co2:'CO₂ / año',th_zone:'Zona',
+ z_A:'Evaporativa',z_B:'Híbrida',z_C:'Solo inercia',
+ cv_wind:'Viento',cv_pad:'Panel húmedo',cv_chim:'Chimenea solar',cv_fan:'Ventilador solar',cv_panel:'Panel solar',cv_out:'Salida de aire caliente',cv_sup:'Impulsión',cv_room:'Habitación',cv_night:'Ventilación nocturna',
+ disclaimer:'Modelo didáctico simplificado: consulte Método y Limitaciones antes de citar cifras.',
+ interface_note:'El modelo interactivo está disponible en 7 idiomas; el texto del informe está en inglés.'},
+fr:{rhin:'Humidité intérieure',feels:'Ressenti',l_feel:'Intérieur, ressenti (corrigé de l’humidité)',lang:'Langue',units:'Unités',currency:'Devise',metric:'Métrique',imperial:'Impérial',
+ xsec:'Coupe en direct',cool:'frais',warm:'tiède',hot:'chaud',time:'Heure de la journée',play:'Lire la journée',pause:'Pause',
+ trad:'Barjeel traditionnel',eco:'EcoCatcher (toutes les améliorations)',share:'Copier le lien du scénario',copied:'Lien copié',print:'Imprimer / PDF',
+ climate:'Climat et contexte',city:'Lieu',custom:'Scénario personnalisé',tmax:'Température extérieure maximale',rh:'Humidité au pic',wind:'Vitesse du vent',swing:'Écart jour–nuit',area:'Surface de la pièce',months:'Saison de climatisation',price:'Prix de l’électricité',grid:'Intensité carbone du réseau',
+ upg_title:'Améliorations modernes — cliquer pour activer',
+ u_pad:'Tampon évaporatif',u_pad_d:'Tampon en jute ou cellulose alimenté en eaux grises. Refroidit l’air par évaporation ; plus efficace en air sec.',
+ u_chimney:'Cheminée solaire',u_chimney_d:'Tôle noire mate derrière un vitrage. Le soleil chauffe l’air extrait et renforce le tirage sans vent.',
+ u_fan:'Ventilateurs solaires',u_fan_d:'Panneau de 10 W et ventilateurs de PC 12 V recyclés. Débit garanti par temps calme et ensoleillé.',
+ u_louvers:'Persiennes intelligentes',u_louvers_d:'ESP32 + capteur + micro-servos. S’ouvrent au vent, se ferment lors des tempêtes de sable, ventilent la nuit.',
+ u_mesh:'Grille anti-insectes et poussière',u_mesh_d:'Grille recyclée en fibre de verre ou inox. Bloque sable, insectes et oiseaux (légère perte de débit).',
+ u_mass:'Murs à forte inertie',u_mass_d:'Enduit d’argile ou pisé. Stocke la fraîcheur nocturne et atténue le pic journalier.',
+ res_title:'Résultats à l’heure choisie',outside:'Extérieur',indoor:'Intérieur (est.)',airflow:'Débit d’air',supply:'Air soufflé',water:'Eau du tampon',chours:'Heures confortables',
+ c_ok:'Confortable',c_acc:'Acceptable',c_warm:'Chaud',c_hot:'Trop chaud',
+ econ_title:'Bilan annuel',cost:'Coût de construction',payback:'Retour sur investissement',kwh:'Énergie de clim. économisée / an',money:'Économies / an',co2:'CO₂ évité / an',gridUse:'Électricité du réseau',
+ econ_note:'Hypothèse de mode mixte : la clim ne fonctionne que lorsque la pièce sort de la zone de confort.',
+ humid:'<b>Air humide.</b> Le refroidissement évaporatif est faible quand l’humidité est élevée. Misez davantage sur la ventilation nocturne, l’inertie thermique et les ventilateurs solaires.',
+ u_months:'mois',u_yrs:'ans',u_mos:'mois',u_day:'/ jour',u_h:'h',never:'non atteint',
+ ch24:'Profil sur 24 heures',l_out:'Extérieur',l_sup:'Air soufflé',l_in:'Intérieur',l_band:'Zone de confort (ASHRAE 55 adaptatif, 80 %)',
+ abl:'Ablation : apport de chaque amélioration',abl_sub:'Hausse de la température intérieure maximale si l’amélioration est retirée du design complet',
+ suit:'Carte d’adéquation climatique',suit_sub:'Température extérieure en fonction de l’humidité. Les points sont les villes de l’atlas ; l’anneau est votre scénario.',
+ zA:'Refroidissement évaporatif efficace',zB:'Hybride : évaporatif + ventilateur + ventilation nocturne',zC:'Ventilation nocturne et inertie seulement',
+ atlas:'Atlas mondial',atlas_sub:'Design EcoCatcher complet dans une pièce de 20 m², avec le climat, le tarif et le réseau de chaque ville. Cliquez sur une ligne pour la charger dans le modèle.',
+ th_city:'Lieu',th_out:'Max. ext.',th_in:'Max. int.',th_ch:'Heures conf./j',th_save:'Économie / an',th_pay:'Retour',th_co2:'CO₂ / an',th_zone:'Zone',
+ z_A:'Évaporatif',z_B:'Hybride',z_C:'Inertie seule',
+ cv_wind:'Vent',cv_pad:'Tampon humide',cv_chim:'Cheminée solaire',cv_fan:'Ventilateur solaire',cv_panel:'Panneau solaire',cv_out:'Sortie d’air chaud',cv_sup:'Soufflage',cv_room:'Pièce',cv_night:'Ventilation nocturne',
+ disclaimer:'Modèle pédagogique simplifié : voir Méthode et Limites avant de citer des chiffres.',
+ interface_note:'Le modèle interactif est disponible en 7 langues ; le texte du rapport est en anglais.'},
+ar:{rhin:'الرطوبة الداخلية',feels:'المحسوسة',l_feel:'الداخل، الحرارة المحسوسة (معدّلة بالرطوبة)',lang:'اللغة',units:'الوحدات',currency:'العملة',metric:'متري',imperial:'إمبراطوري',
+ xsec:'مقطع عرضي مباشر',cool:'بارد',warm:'دافئ',hot:'حار',time:'وقت اليوم',play:'تشغيل اليوم',pause:'إيقاف مؤقت',
+ trad:'البارجيل التقليدي',eco:'إيكوكاتشر (كل التحسينات)',share:'نسخ رابط السيناريو',copied:'تم نسخ الرابط',print:'طباعة / PDF',
+ climate:'المناخ والسياق',city:'الموقع',custom:'سيناريو مخصص',tmax:'أقصى درجة حرارة خارجية',rh:'الرطوبة وقت الذروة',wind:'سرعة الرياح',swing:'الفرق بين النهار والليل',area:'مساحة الغرفة',months:'موسم التبريد',price:'سعر الكهرباء',grid:'كثافة الكربون في الشبكة',
+ upg_title:'تحسينات حديثة — انقر للتفعيل',
+ u_pad:'وسادة تبريد تبخيري',u_pad_d:'وسادة من الجوت أو السليلوز تُغذّى بالمياه الرمادية. تبرّد الهواء بالتبخر، وتعمل أفضل في الهواء الجاف.',
+ u_chimney:'مدخنة شمسية',u_chimney_d:'صفيح أسود مطفأ خلف زجاج. تسخّن الشمس الهواء الخارج فيقوى السحب دون رياح.',
+ u_fan:'مراوح شمسية',u_fan_d:'لوح شمسي 10 واط يشغّل مراوح حاسوب 12 فولت معاد تدويرها. تدفق هواء مضمون في الأيام المشمسة الهادئة.',
+ u_louvers:'شرائح ذكية',u_louvers_d:'ESP32 مع حساس ومحركات صغيرة. تنفتح للرياح، وتُغلق في العواصف الرملية، وتهوّي ليلاً.',
+ u_mesh:'شبكة ضد الحشرات والغبار',u_mesh_d:'شبكة معاد تدويرها من الألياف الزجاجية أو الفولاذ. تمنع الرمل والحشرات والطيور (فقد بسيط في التدفق).',
+ u_mass:'جدران كتلة حرارية',u_mass_d:'لياسة طينية أو تراب مدكوك. تخزن برودة الليل وتخفف ذروة النهار.',
+ res_title:'النتائج في الساعة المختارة',outside:'الخارج',indoor:'الداخل (تقديري)',airflow:'تدفق الهواء',supply:'هواء الإمداد',water:'ماء الوسادة',chours:'ساعات الراحة',
+ c_ok:'مريح',c_acc:'مقبول',c_warm:'دافئ',c_hot:'حار جداً',
+ econ_title:'الجدوى السنوية',cost:'تكلفة البناء',payback:'فترة الاسترداد',kwh:'طاقة التكييف الموفّرة / سنة',money:'المال الموفّر / سنة',co2:'CO₂ المتجنَّب / سنة',gridUse:'كهرباء الشبكة المستخدمة',
+ econ_note:'افتراض التشغيل المختلط: يعمل المكيّف فقط عندما تخرج الغرفة عن نطاق الراحة.',
+ humid:'<b>هواء رطب.</b> يضعف التبريد التبخيري عند ارتفاع الرطوبة. اعتمد أكثر على التهوية الليلية والكتلة الحرارية والمراوح الشمسية.',
+ u_months:'أشهر',u_yrs:'سنوات',u_mos:'أشهر',u_day:'/ يوم',u_h:'س',never:'لا يتحقق',
+ ch24:'منحنى 24 ساعة',l_out:'الخارج',l_sup:'هواء الإمداد',l_in:'الداخل',l_band:'نطاق الراحة (ASHRAE 55 التكيّفي، 80٪)',
+ abl:'تحليل الإزالة: مساهمة كل تحسين',abl_sub:'ارتفاع أقصى درجة حرارة داخلية عند إزالة التحسين من التصميم الكامل',
+ suit:'خريطة الملاءمة المناخية',suit_sub:'درجة الحرارة الخارجية مقابل الرطوبة. النقاط مدن الأطلس، والحلقة سيناريوك الحالي.',
+ zA:'التبريد التبخيري فعّال',zB:'هجين: تبخيري + مروحة + تهوية ليلية',zC:'تهوية ليلية وكتلة حرارية فقط',
+ atlas:'الأطلس العالمي',atlas_sub:'تصميم إيكوكاتشر الكامل في غرفة 20 م²، بمناخ وتعرفة وشبكة كل مدينة. انقر على صف لتحميله في النموذج.',
+ th_city:'الموقع',th_out:'أقصى خارجي',th_in:'أقصى داخلي',th_ch:'ساعات راحة/يوم',th_save:'التوفير / سنة',th_pay:'الاسترداد',th_co2:'CO₂ / سنة',th_zone:'المنطقة',
+ z_A:'تبخيري',z_B:'هجين',z_C:'كتلة فقط',
+ cv_wind:'الرياح',cv_pad:'وسادة رطبة',cv_chim:'مدخنة شمسية',cv_fan:'مروحة شمسية',cv_panel:'لوح شمسي',cv_out:'خروج الهواء الساخن',cv_sup:'الإمداد',cv_room:'الغرفة',cv_night:'تهوية ليلية',
+ disclaimer:'نموذج تعليمي مبسّط — راجع المنهجية والقيود قبل الاستشهاد بالأرقام.',
+ interface_note:'النموذج التفاعلي متاح بسبع لغات؛ نص التقرير باللغة الإنجليزية.'},
+zh:{rhin:'室内湿度',feels:'体感',l_feel:'室内体感温度（湿度修正）',lang:'语言',units:'单位',currency:'货币',metric:'公制',imperial:'英制',
+ xsec:'实时剖面',cool:'凉',warm:'温',hot:'热',time:'时刻',play:'播放一天',pause:'暂停',
+ trad:'传统捕风塔',eco:'EcoCatcher（全部升级）',share:'复制情景链接',copied:'链接已复制',print:'打印 / PDF',
+ climate:'气候与条件',city:'地点',custom:'自定义情景',tmax:'室外最高温度',rh:'峰值时湿度',wind:'风速',swing:'昼夜温差',area:'房间面积',months:'制冷季',price:'电价',grid:'电网碳强度',
+ upg_title:'现代升级 —— 点击切换',
+ u_pad:'蒸发冷却垫',u_pad_d:'由灰水供水的黄麻或纤维素垫。通过蒸发为进气降温，空气越干燥效果越好。',
+ u_chimney:'太阳能烟囱',u_chimney_d:'玻璃后的哑光黑色金属板。阳光加热排出的空气，无风时也能增强抽力。',
+ u_fan:'太阳能风扇',u_fan_d:'10 W 太阳能板驱动回收的 12 V 电脑风扇。晴朗无风时也能保证通风量。',
+ u_louvers:'智能百叶',u_louvers_d:'ESP32 + 传感器 + 微型舵机。迎风开启，沙尘暴时关闭，夜间通风。',
+ u_mesh:'防虫防尘网',u_mesh_d:'回收玻璃纤维或不锈钢网。阻挡沙尘、昆虫和鸟类（风量略有损失）。',
+ u_mass:'蓄热墙体',u_mass_d:'黏土抹灰或夯土内衬。储存夜间凉意，削弱白天的温度峰值。',
+ res_title:'所选时刻的结果',outside:'室外',indoor:'室内（估算）',airflow:'风量',supply:'送风',water:'冷却垫耗水',chours:'舒适小时数',
+ c_ok:'舒适',c_acc:'可接受',c_warm:'偏热',c_hot:'过热',
+ econ_title:'年度经济性',cost:'建造成本',payback:'回收期',kwh:'每年节省空调电量',money:'每年节省费用',co2:'每年减少 CO₂',gridUse:'电网用电',
+ econ_note:'混合模式假设：仅当房间超出舒适区时才开启空调。',
+ humid:'<b>空气潮湿。</b>湿度高时蒸发冷却效果较弱。应更多依靠夜间通风、蓄热体和太阳能风扇。',
+ u_months:'个月',u_yrs:'年',u_mos:'个月',u_day:'/ 天',u_h:'小时',never:'无法回收',
+ ch24:'24 小时曲线',l_out:'室外',l_sup:'送风',l_in:'室内',l_band:'舒适区（ASHRAE 55 适应性模型，80%）',
+ abl:'消融分析：每项升级的贡献',abl_sub:'从完整设计中移除该升级后，室内最高温度的上升值',
+ suit:'气候适宜性图',suit_sub:'室外温度与湿度。圆点为图集城市，圆环为当前情景。',
+ zA:'蒸发冷却有效',zB:'混合：蒸发 + 风扇 + 夜间通风',zC:'仅夜间通风与蓄热',
+ atlas:'全球图集',atlas_sub:'完整 EcoCatcher 设计，20 m² 房间，采用各城市自身的气候、电价与电网数据。点击一行即可载入模型。',
+ th_city:'地点',th_out:'室外峰值',th_in:'室内峰值',th_ch:'舒适小时/天',th_save:'年节省',th_pay:'回收期',th_co2:'CO₂ / 年',th_zone:'分区',
+ z_A:'蒸发型',z_B:'混合型',z_C:'仅蓄热',
+ cv_wind:'风',cv_pad:'湿垫',cv_chim:'太阳能烟囱',cv_fan:'太阳能风扇',cv_panel:'太阳能板',cv_out:'热空气排出',cv_sup:'送风',cv_room:'房间',cv_night:'夜间通风',
+ disclaimer:'简化教学模型——引用数据前请参阅“方法”与“局限”部分。',
+ interface_note:'交互模型提供 7 种语言；报告正文为英文。'},
+ru:{rhin:'Влажность внутри',feels:'Ощущается',l_feel:'Внутри, ощущаемая (с учётом влажности)',lang:'Язык',units:'Единицы',currency:'Валюта',metric:'Метрические',imperial:'Имперские',
+ xsec:'Разрез в реальном времени',cool:'прохладно',warm:'тепло',hot:'жарко',time:'Время суток',play:'Запустить сутки',pause:'Пауза',
+ trad:'Традиционный бадгир',eco:'EcoCatcher (все улучшения)',share:'Скопировать ссылку на сценарий',copied:'Ссылка скопирована',print:'Печать / PDF',
+ climate:'Климат и условия',city:'Место',custom:'Свой сценарий',tmax:'Максимальная температура снаружи',rh:'Влажность в пик',wind:'Скорость ветра',swing:'Суточный перепад',area:'Площадь комнаты',months:'Сезон охлаждения',price:'Цена электроэнергии',grid:'Углеродоёмкость сети',
+ upg_title:'Современные улучшения — нажмите, чтобы включить',
+ u_pad:'Испарительная панель',u_pad_d:'Панель из джута или целлюлозы, смачиваемая серой водой. Охлаждает воздух испарением; лучше всего в сухом климате.',
+ u_chimney:'Солнечная труба',u_chimney_d:'Матово-чёрный лист за стеклом. Солнце нагревает вытяжной воздух и усиливает тягу даже без ветра.',
+ u_fan:'Солнечные вентиляторы',u_fan_d:'Панель 10 Вт и переработанные компьютерные вентиляторы 12 В. Гарантированный поток в тихие солнечные дни.',
+ u_louvers:'Умные жалюзи',u_louvers_d:'ESP32 + датчик + микросервоприводы. Открываются к ветру, закрываются в пыльную бурю, проветривают ночью.',
+ u_mesh:'Сетка от насекомых и пыли',u_mesh_d:'Переработанная стеклосетка или нержавеющая сетка. Не пускает песок, насекомых и птиц (небольшая потеря потока).',
+ u_mass:'Теплоёмкие стены',u_mass_d:'Глиняная штукатурка или набивной грунт. Накапливает ночную прохладу и сглаживает дневной пик.',
+ res_title:'Результаты в выбранный час',outside:'Снаружи',indoor:'Внутри (оценка)',airflow:'Расход воздуха',supply:'Приточный воздух',water:'Расход воды панели',chours:'Комфортные часы',
+ c_ok:'Комфортно',c_acc:'Приемлемо',c_warm:'Тепло',c_hot:'Слишком жарко',
+ econ_title:'Годовая экономика',cost:'Стоимость постройки',payback:'Окупаемость',kwh:'Экономия энергии кондиционера / год',money:'Экономия денег / год',co2:'Предотвращённый CO₂ / год',gridUse:'Электроэнергия из сети',
+ econ_note:'Смешанный режим: кондиционер работает, только когда комната выходит из зоны комфорта.',
+ humid:'<b>Влажный воздух.</b> При высокой влажности испарительное охлаждение слабое. Больше полагайтесь на ночное проветривание, тепловую массу и солнечные вентиляторы.',
+ u_months:'мес.',u_yrs:'лет',u_mos:'мес.',u_day:'/ сутки',u_h:'ч',never:'не окупается',
+ ch24:'Суточный профиль',l_out:'Снаружи',l_sup:'Приток',l_in:'Внутри',l_band:'Зона комфорта (адаптивная ASHRAE 55, 80 %)',
+ abl:'Абляция: вклад каждого улучшения',abl_sub:'Рост пиковой температуры в помещении, если убрать улучшение из полной конструкции',
+ suit:'Карта климатической пригодности',suit_sub:'Температура снаружи и влажность. Точки — города атласа; кольцо — текущий сценарий.',
+ zA:'Испарительное охлаждение эффективно',zB:'Гибрид: испарение + вентилятор + ночное проветривание',zC:'Только ночное проветривание и тепловая масса',
+ atlas:'Мировой атлас',atlas_sub:'Полная конструкция EcoCatcher, комната 20 м², климат, тариф и энергосеть каждого города. Нажмите на строку, чтобы загрузить её в модель.',
+ th_city:'Место',th_out:'Макс. снаружи',th_in:'Макс. внутри',th_ch:'Комф. ч/сут',th_save:'Экономия / год',th_pay:'Окупаемость',th_co2:'CO₂ / год',th_zone:'Зона',
+ z_A:'Испарительная',z_B:'Гибридная',z_C:'Только масса',
+ cv_wind:'Ветер',cv_pad:'Влажная панель',cv_chim:'Солнечная труба',cv_fan:'Солнечный вентилятор',cv_panel:'Солнечная панель',cv_out:'Выход горячего воздуха',cv_sup:'Приток',cv_room:'Комната',cv_night:'Ночное проветривание',
+ disclaimer:'Упрощённая учебная модель — прежде чем цитировать цифры, см. «Метод» и «Ограничения».',
+ interface_note:'Интерактивная модель доступна на 7 языках; текст отчёта — на английском.'},
+az:{rhin:'Daxili rütubət',feels:'Hiss olunan',l_feel:'İçəridə, hiss olunan (rütubətə görə)',lang:'Dil',units:'Vahidlər',currency:'Valyuta',metric:'Metrik',imperial:'İmperial',
+ xsec:'Canlı kəsik',cool:'sərin',warm:'ilıq',hot:'isti',time:'Günün vaxtı',play:'Günü oynat',pause:'Fasilə',
+ trad:'Ənənəvi badgir',eco:'EcoCatcher (bütün təkmilləşdirmələr)',share:'Ssenari linkini kopyala',copied:'Link kopyalandı',print:'Çap / PDF',
+ climate:'İqlim və şərait',city:'Məkan',custom:'Fərdi ssenari',tmax:'Maksimal xarici temperatur',rh:'Pik anında rütubət',wind:'Külək sürəti',swing:'Gecə-gündüz fərqi',area:'Otağın sahəsi',months:'Soyutma mövsümü',price:'Elektrik qiyməti',grid:'Şəbəkənin karbon intensivliyi',
+ upg_title:'Müasir təkmilləşdirmələr — aktivləşdirmək üçün klikləyin',
+ u_pad:'Buxarlandırıcı panel',u_pad_d:'Boz su ilə islanan cut və ya sellüloz panel. Havanı buxarlanma ilə sərinləşdirir; quru havada ən effektivdir.',
+ u_chimney:'Günəş bacası',u_chimney_d:'Şüşə arxasında tutqun qara metal təbəqə. Günəş çıxan havanı qızdırır və küləksiz də dartını gücləndirir.',
+ u_fan:'Günəş ventilyatorları',u_fan_d:'10 Vt panel və təkrar istifadə olunan 12 V kompüter ventilyatorları. Sakit, günəşli günlərdə zəmanətli hava axını.',
+ u_louvers:'Ağıllı jalüzlər',u_louvers_d:'ESP32 + sensor + mikroservolar. Küləyə açılır, qum fırtınasında bağlanır, gecə havalandırır.',
+ u_mesh:'Həşərat və toz toru',u_mesh_d:'Təkrar emal olunmuş şüşə lifi və ya paslanmayan polad tor. Qum, həşərat və quşları içəri buraxmır (cüzi axın itkisi).',
+ u_mass:'İstilik tutumlu divarlar',u_mass_d:'Gil suvaq və ya döyülmüş torpaq. Gecə sərinliyini saxlayır və gündüz pikini yumşaldır.',
+ res_title:'Seçilmiş saatda nəticələr',outside:'Çöldə',indoor:'İçəridə (təxmini)',airflow:'Hava axını',supply:'Verilən hava',water:'Panelin su sərfi',chours:'Rahat saatlar',
+ c_ok:'Rahat',c_acc:'Qəbuledilən',c_warm:'İsti',c_hot:'Çox isti',
+ econ_title:'İllik iqtisadiyyat',cost:'Tikinti xərci',payback:'Özünü ödəmə',kwh:'Qənaət edilən kondisioner enerjisi / il',money:'Qənaət edilən pul / il',co2:'Qarşısı alınan CO₂ / il',gridUse:'Şəbəkə elektriki',
+ econ_note:'Qarışıq rejim fərziyyəsi: kondisioner yalnız otaq rahatlıq zolağından çıxanda işləyir.',
+ humid:'<b>Rütubətli hava.</b> Rütubət yüksək olduqda buxarlandırıcı soyutma zəifdir. Gecə havalandırmasına, istilik kütləsinə və günəş ventilyatorlarına daha çox güvənin.',
+ u_months:'ay',u_yrs:'il',u_mos:'ay',u_day:'/ gün',u_h:'saat',never:'ödənmir',
+ ch24:'24 saatlıq profil',l_out:'Çöldə',l_sup:'Verilən hava',l_in:'İçəridə',l_band:'Rahatlıq zolağı (ASHRAE 55 adaptiv, 80%)',
+ abl:'Ablyasiya: hər təkmilləşdirmənin töhfəsi',abl_sub:'Təkmilləşdirmə tam dizayndan çıxarılarsa, maksimal daxili temperaturun artımı',
+ suit:'İqlimə uyğunluq xəritəsi',suit_sub:'Xarici temperatur və rütubət. Nöqtələr atlasdakı şəhərlərdir; halqa cari ssenarinizdir.',
+ zA:'Buxarlandırıcı soyutma effektivdir',zB:'Hibrid: buxarlandırma + ventilyator + gecə havalandırması',zC:'Yalnız gecə havalandırması və istilik kütləsi',
+ atlas:'Qlobal atlas',atlas_sub:'Tam EcoCatcher dizaynı, 20 m² otaq, hər şəhərin öz iqlimi, tarifi və şəbəkəsi ilə. Modelə yükləmək üçün sətrə klikləyin.',
+ th_city:'Məkan',th_out:'Maks. çöl',th_in:'Maks. içəri',th_ch:'Rahat saat/gün',th_save:'Qənaət / il',th_pay:'Özünü ödəmə',th_co2:'CO₂ / il',th_zone:'Zona',
+ z_A:'Buxarlandırıcı',z_B:'Hibrid',z_C:'Yalnız kütlə',
+ cv_wind:'Külək',cv_pad:'Yaş panel',cv_chim:'Günəş bacası',cv_fan:'Günəş ventilyatoru',cv_panel:'Günəş paneli',cv_out:'İsti hava çıxışı',cv_sup:'Verilən hava',cv_room:'Otaq',cv_night:'Gecə havalandırması',
+ disclaimer:'Sadələşdirilmiş tədris modeli — rəqəmlərə istinad etməzdən əvvəl Metod və Məhdudiyyətlər bölmələrinə baxın.',
+ interface_note:'İnteraktiv model 7 dildə mövcuddur; hesabatın mətni ingilis dilindədir.'}
+};
+
+/* Indicative exchange rates per 1 USD — edit to update. */
+const RATES = { USD:1, EUR:0.92, GBP:0.78, AZN:1.70, AED:3.6725, SAR:3.75, QAR:3.64, INR:84, PKR:280, CNY:7.2, EGP:48, MXN:18, BRL:5.5, AUD:1.5 };
+
+/* =====================================================================
+   2. Data
+   ===================================================================== */
+/* T: peak °C, RH: afternoon %, v: m/s, sw: diurnal range K, mo: cooling months,
+   p: residential tariff USD/kWh, g: grid kg CO2/kWh — indicative screening values */
+const CITIES = [
+ {id:'riyadh',   name:'Riyadh',        cc:'Saudi Arabia', T:44, RH:12, v:3.5, sw:14, mo:7,  p:0.05, g:0.57},
+ {id:'kuwait',   name:'Kuwait City',   cc:'Kuwait',       T:46, RH:10, v:4.5, sw:13, mo:7,  p:0.01, g:0.55},
+ {id:'baghdad',  name:'Baghdad',       cc:'Iraq',         T:44, RH:15, v:3.0, sw:17, mo:6,  p:0.03, g:0.65},
+ {id:'yazd',     name:'Yazd',          cc:'Iran',         T:40, RH:12, v:4.5, sw:16, mo:5,  p:0.01, g:0.49},
+ {id:'dubai',    name:'Dubai',         cc:'UAE',          T:41, RH:40, v:4.0, sw:8,  mo:8,  p:0.09, g:0.40},
+ {id:'doha',     name:'Doha',          cc:'Qatar',        T:42, RH:35, v:4.5, sw:9,  mo:8,  p:0.04, g:0.49},
+ {id:'cairo',    name:'Cairo',         cc:'Egypt',        T:35, RH:35, v:4.0, sw:12, mo:6,  p:0.03, g:0.47},
+ {id:'aswan',    name:'Aswan',         cc:'Egypt',        T:42, RH:10, v:4.0, sw:16, mo:7,  p:0.03, g:0.47},
+ {id:'marrakech',name:'Marrakech',     cc:'Morocco',      T:37, RH:25, v:3.0, sw:17, mo:5,  p:0.11, g:0.63},
+ {id:'seville',  name:'Seville',       cc:'Spain',        T:36, RH:30, v:3.0, sw:16, mo:4,  p:0.25, g:0.15},
+ {id:'athens',   name:'Athens',        cc:'Greece',       T:33, RH:40, v:4.0, sw:10, mo:4,  p:0.22, g:0.35},
+ {id:'baku',     name:'Baku',          cc:'Azerbaijan',   T:31, RH:45, v:6.5, sw:8,  mo:3,  p:0.05, g:0.45},
+ {id:'delhi',    name:'Delhi (May)',   cc:'India',        T:40, RH:25, v:3.0, sw:13, mo:7,  p:0.08, g:0.71},
+ {id:'jacobabad',name:'Jacobabad',     cc:'Pakistan',     T:44, RH:25, v:3.0, sw:15, mo:7,  p:0.15, g:0.40},
+ {id:'karachi',  name:'Karachi',       cc:'Pakistan',     T:35, RH:60, v:5.0, sw:7,  mo:8,  p:0.15, g:0.40},
+ {id:'phoenix',  name:'Phoenix',       cc:'USA',          T:41, RH:12, v:3.0, sw:14, mo:6,  p:0.15, g:0.37},
+ {id:'mexicali', name:'Mexicali',      cc:'Mexico',       T:42, RH:20, v:3.0, sw:17, mo:6,  p:0.07, g:0.42},
+ {id:'kano',     name:'Kano (April)',  cc:'Nigeria',      T:39, RH:20, v:3.0, sw:16, mo:6,  p:0.06, g:0.45},
+ {id:'lodwar',   name:'Lodwar',        cc:'Kenya',        T:37, RH:25, v:5.0, sw:12, mo:12, p:0.20, g:0.10},
+ {id:'alice',    name:'Alice Springs', cc:'Australia',    T:36, RH:15, v:3.5, sw:17, mo:6,  p:0.25, g:0.55},
+ {id:'turpan',   name:'Turpan',        cc:'China',        T:40, RH:20, v:3.0, sw:15, mo:4,  p:0.08, g:0.58},
+ {id:'petrolina',name:'Petrolina',     cc:'Brazil',       T:34, RH:40, v:4.0, sw:11, mo:9,  p:0.15, g:0.10},
+ {id:'mumbai',   name:'Mumbai',        cc:'India',        T:33, RH:70, v:4.0, sw:6,  mo:8,  p:0.08, g:0.71},
+ {id:'singapore',name:'Singapore',     cc:'Singapore',    T:32, RH:65, v:2.5, sw:7,  mo:12, p:0.24, g:0.41},
+];
+
+const UPG_KEYS = ['pad','chimney','fan','louvers','mesh','mass'];
+const UPG = {
+ pad:     {cost:25, mat:'Jute or cellulose pad + recycled-bottle drip line fed by greywater'},
+ chimney: {cost:20, mat:'Recycled tin sheet painted matte black + salvaged window glass'},
+ fan:     {cost:28, mat:'10 W solar panel + three recycled 140 mm 12 V PC fans (≈ 9 W)'},
+ louvers: {cost:20, mat:'ESP32 + SHT31 sensor + 2 micro-servos + bamboo slats'},
+ mesh:    {cost:6,  mat:'Recycled fibreglass or stainless insect mesh'},
+ mass:    {cost:40, mat:'Clay plaster or rammed-earth lining from local soil'},
+};
+const BASE = {name:'Tower body (3 m above roof)', mat:'Compressed earth blocks, reclaimed timber frame, lime plaster', cost:150};
+const ICONS = {
+ pad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>',
+ chimney:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ fan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="1.6"/><path d="M12 10.4C11 6 13 3 15.5 4.2 17.5 5.2 15 9 12 10.4zM13.6 12c4.4-1 7.4 1 6.2 3.5-1 2-4.8-.5-6.2-3.5zM12 13.6c1 4.4-1 7.4-3.5 6.2-2-1 .5-4.8 3.5-6.2zM10.4 12C6 13 3 11 4.2 8.5c1-2 4.8.5 6.2 3.5z"/></svg>',
+ louvers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M7 7l10 2M7 11l10 2M7 15l10 2"/></svg>',
+ mesh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 9h16M4 14h16M9 4v16M14 4v16"/></svg>',
+ mass:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h18M3 12h18M3 18h18M8 6v6M16 6v6M12 12v6M5 18v0"/><rect x="3" y="3" width="18" height="18" rx="1"/></svg>',
+};
+
+/* =====================================================================
+   3. Physics model
+   ===================================================================== */
+const PHY = { A:0.36, Cd:0.6, sqrtdCp:0.55, H:6, rho:1.2, cp:1005, hfg:2.45e6, g:9.81, fanQ:0.12, Tset:25, eAC:12.5 };
+const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+function wetBulb(T, RH){ // Stull (2011)
+  RH = clamp(RH,5,99);
+  return T*Math.atan(0.151977*Math.sqrt(RH+8.313659)) + Math.atan(T+RH) - Math.atan(RH-1.676331)
+       + 0.00391838*Math.pow(RH,1.5)*Math.atan(0.023101*RH) - 4.686035;
+}
+const MA=17.62, MB=243.12; // Magnus
+function dewPoint(T,RH){ const g=Math.log(clamp(RH,1,100)/100)+MA*T/(MB+T); return MB*g/(MA-g); }
+function rhFromDew(T,Td){ return 100*Math.exp(MA*Td/(MB+Td) - MA*T/(MB+T)); }
+const es = T => 6.112*Math.exp(MA*T/(MB+T)); // saturation vapour pressure, hPa
+const GAMMA = 0.6687; // psychrometer constant at sea level, hPa/K
+const ZONE_WB = [22.5, 25.5]; // wet-bulb limits between zones A/B and B/C, °C
+
+function hourly(S, cfg, h){
+  const c = Math.cos(2*Math.PI*(h-15)/24);
+  const T = S.T - S.sw/2 + (S.sw/2)*c;
+  const Td = dewPoint(S.T, S.RH);
+  const RH = Math.min(99, rhFromDew(T, Td));
+  const sol = Math.max(0, Math.sin(Math.PI*(h-6)/12));
+  const night = sol === 0;
+  const v = S.v*(0.75 + 0.25*c);
+  let Qw = PHY.Cd*PHY.A*v*PHY.sqrtdCp;
+  if (cfg.pad) Qw *= 0.85;
+  if (cfg.mesh) Qw *= 0.92;
+  if (cfg.louvers) Qw *= night ? 1.45 : 1.2;
+  const dTs = 1.5 + (cfg.chimney ? 9*sol : 0);
+  const Qs = PHY.Cd*PHY.A*Math.sqrt(2*PHY.g*PHY.H*dTs/(273.15+T));
+  const Q = Math.hypot(Qw, Qs) + (cfg.fan ? PHY.fanQ*Math.min(1, sol*2.5) : 0);
+  const Twb = wetBulb(T, RH);
+  const Ts = T - (cfg.pad ? 0.7 : 0.1)*(T - Twb);
+  const G = S.area*(25 + 30*sol);
+  const Tss = Math.min(Ts + G/(PHY.rho*PHY.cp*Q), T + 3);
+  const water = cfg.pad ? PHY.rho*Q*PHY.cp*(T - Ts)/PHY.hfg : 0; // kg/s ≈ L/s
+  const eOut = es(Math.min(Td, T));
+  const e = cfg.pad ? Math.max(eOut, es(Twb) - GAMMA*(Ts - Twb)) : eOut; // indoor vapour pressure = supply air
+  return { h, T, RH, Twb, sol, night, v, Q, Ts, Tss, water, dTs, e };
+}
+
+function simulate(S, cfg){
+  const hrs = []; for (let h=0; h<24; h++) hrs.push(hourly(S, cfg, h));
+  const tau = cfg.mass ? 10 : 2.5, dt = 0.25;
+  let Ti = hrs.reduce((s,r)=>s+r.Tss,0)/24;
+  for (let day=0; day<4; day++) for (let k=0; k<24/dt; k++){
+    const t = k*dt, i = Math.floor(t), f = t - i;
+    if (day===3 && f===0) hrs[i].Ti = Ti;
+    const target = hrs[i].Tss + (hrs[(i+1)%24].Tss - hrs[i].Tss)*f;
+    Ti += (target - Ti)*(dt/tau);
+  }
+  const Tmean = S.T - S.sw/2;
+  const Tc = 0.31*clamp(Tmean,10,33.5) + 17.8;
+  const up80 = Tc + 3.5, up90 = Tc + 2.5, lo80 = Tc - 3.5;
+  let base=0, res=0, ch=0, water=0;
+  for (const r of hrs){
+    r.feel = r.Ti + 0.33*r.e - 4.0;                 // Steadman apparent temperature, still air
+    r.RHin = Math.min(100, 100*r.e/es(r.Ti));
+    base += Math.max(0, r.T - PHY.Tset);
+    if (r.feel > up80) res += Math.max(0, r.Ti - PHY.Tset) + 0.33*Math.max(0, r.e - 12.1); else ch++;
+    water += r.water*3600;
+  }
+  const frac = base>0 ? clamp(1 - res/base, 0, 1) : 0;
+  const kwhBase = S.area*PHY.eAC*S.mo;
+  const kwh = frac*kwhBase, money = kwh*S.p;
+  const cost = BASE.cost + UPG_KEYS.reduce((s,k)=>s+(cfg[k]?UPG[k].cost:0),0);
+  return { hrs, Tc, up80, up90, lo80, ch, frac, kwh, money, co2:kwh*S.g, cost,
+           pay: money>0 ? cost/money : Infinity, water,
+           peakIn: Math.max(...hrs.map(r=>r.Ti)), peakFeel: Math.max(...hrs.map(r=>r.feel)), peakOut: S.T };
+}
+function zoneOf(T, RH){ const wb = wetBulb(T,RH); return wb<=ZONE_WB[0] ? 'A' : wb<=ZONE_WB[1] ? 'B' : 'C'; }
+const FULL = Object.fromEntries(UPG_KEYS.map(k=>[k,true]));
+
+/* =====================================================================
+   4. Preferences, state & formatting
+   ===================================================================== */
+const store = { get(k){ try{ return localStorage.getItem('ecocatcher.'+k); }catch(e){ return null; } },
+                set(k,v){ try{ localStorage.setItem('ecocatcher.'+k, v); }catch(e){} } };
+const navLang = (navigator.language||'en').toLowerCase();
+const regionCur = { us:'USD', gb:'GBP', az:'AZN', ae:'AED', sa:'SAR', qa:'QAR', in:'INR', pk:'PKR', cn:'CNY', eg:'EGP', mx:'MXN', br:'BRL', au:'AUD',
+  de:'EUR', fr:'EUR', es:'EUR', it:'EUR', gr:'EUR', nl:'EUR', pt:'EUR', ie:'EUR', at:'EUR', be:'EUR', fi:'EUR' };
+const PREF = {
+  lang: store.get('lang') || (LANGS[navLang.slice(0,2)] ? navLang.slice(0,2) : 'en'),
+  units: store.get('units') || (navLang === 'en-us' ? 'imperial' : 'metric'),
+  cur: store.get('cur') || regionCur[navLang.split('-')[1]] || 'USD',
+};
+if (!RATES[PREF.cur]) PREF.cur = 'USD';
+
+const S = { city:'riyadh', area:20, hour:15, cfg:{...FULL} };
+function loadCity(id){ const c = CITIES.find(x=>x.id===id); if(!c) return; Object.assign(S,{city:id,T:c.T,RH:c.RH,v:c.v,sw:c.sw,mo:c.mo,p:c.p,g:c.g}); }
+loadCity('riyadh');
+
+const t = k => (I18N[PREF.lang] && I18N[PREF.lang][k]) ?? I18N.en[k] ?? k;
+const fmtCache = new Map();
+function nf(d){ const key=PREF.lang+d; if(!fmtCache.has(key)) fmtCache.set(key,new Intl.NumberFormat(PREF.lang,{minimumFractionDigits:d,maximumFractionDigits:d})); return fmtCache.get(key); }
+const IMP = () => PREF.units === 'imperial';
+const iso = s => PREF.lang==='ar' ? '\u2066'+s+'\u2069' : s; // keep "30 °C" in order inside RTL text
+const fT  = (c,d=1) => iso(IMP() ? nf(d).format(c*9/5+32)+' °F' : nf(d).format(c)+' °C');
+const fDT = (k,d=1) => iso(IMP() ? nf(d).format(k*1.8)+' °F' : nf(d).format(k)+' K');
+const fV  = v => iso(IMP() ? nf(1).format(v*2.23694)+' mph' : nf(1).format(v)+' m/s');
+const fQ  = q => iso(IMP() ? nf(0).format(q*2118.88)+' CFM' : nf(2).format(q)+' m³/s');
+const fA  = a => iso(IMP() ? nf(0).format(a*10.7639)+' ft²' : nf(0).format(a)+' m²');
+const fL  = l => iso(IMP() ? nf(1).format(l*0.264172)+' gal' : nf(0).format(l)+' L');
+const fKg = k => iso(IMP() ? nf(0).format(k*2.20462)+' lb' : nf(0).format(k)+' kg');
+const fKwh= k => iso(nf(0).format(k)+' kWh');
+function fCur(usd, small){
+  const v = usd*RATES[PREF.cur];
+  const d = small ? (v<10?2:v<100?1:0) : 0;
+  try{ return new Intl.NumberFormat(PREF.lang,{style:'currency',currency:PREF.cur,minimumFractionDigits:d,maximumFractionDigits:d}).format(v); }
+  catch(e){ return PREF.cur+' '+nf(d).format(v); }
+}
+function fPay(y){
+  if (!isFinite(y) || y>50) return '—';
+  if (y<1) return nf(0).format(Math.max(1,Math.round(y*12)))+' '+t('u_mos');
+  return nf(1).format(y)+' '+t('u_yrs');
+}
+const fHour = h => String(h).padStart(2,'0')+':00';
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* =====================================================================
+   5. UI
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+let R = simulate(S, S.cfg);
+
+function buildStatic(){
+  $('selLang').innerHTML = Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  $('selCur').innerHTML = Object.keys(RATES).map(k=>`<option value="${k}">${k}</option>`).join('');
+  $('upgrades').innerHTML = UPG_KEYS.map(k=>`
+    <button class="upg" type="button" data-k="${k}" aria-pressed="true">
+      <span class="ic" aria-hidden="true">${ICONS[k]}</span>
+      <span style="flex:1"><span class="t"><span class="nm" style="color:var(--ink)"></span><span class="pr"></span></span><span class="d"></span></span>
+    </button>`).join('');
+  $('upgrades').querySelectorAll('.upg').forEach(b=>b.addEventListener('click',()=>{ S.cfg[b.dataset.k]=!S.cfg[b.dataset.k]; update(); }));
+
+  const sl = [['sT','T'],['sRH','RH'],['sV','v'],['sSw','sw'],['sA','area'],['sMo','mo'],['sP','p'],['sG','g']];
+  sl.forEach(([id,k])=>$(id).addEventListener('input',e=>{
+    S[k] = +e.target.value;
+    if (!['area'].includes(k)) S.city = 'custom';
+    update(false);
+  }));
+  $('sHour').addEventListener('input',e=>{ S.hour=+e.target.value; stopPlay(); update(false); });
+  $('selCity').addEventListener('change',e=>{ if(e.target.value!=='custom'){ loadCity(e.target.value); update(); } });
+  $('presetTrad').addEventListener('click',()=>{ UPG_KEYS.forEach(k=>S.cfg[k]=false); S.cfg.mass=true; update(); });
+  $('presetEco').addEventListener('click',()=>{ UPG_KEYS.forEach(k=>S.cfg[k]=true); update(); });
+  $('btnPlay').addEventListener('click',()=> playing ? stopPlay() : startPlay());
+  $('btnPrint').addEventListener('click',()=>window.print());
+  $('btnShare').addEventListener('click',share);
+  $('selLang').addEventListener('change',e=>{ PREF.lang=e.target.value; store.set('lang',PREF.lang); applyPrefs(); });
+  $('selCur').addEventListener('change',e=>{ PREF.cur=e.target.value; store.set('cur',PREF.cur); applyPrefs(); });
+  $('uMetric').addEventListener('click',()=>{ PREF.units='metric'; store.set('units','metric'); applyPrefs(); });
+  $('uImperial').addEventListener('click',()=>{ PREF.units='imperial'; store.set('units','imperial'); applyPrefs(); });
+}
+
+function applyI18n(){
+  // The report stays English/LTR; only translated interactive regions switch language and direction.
+  document.querySelectorAll('.i18n-scope').forEach(el=>{ el.lang = PREF.lang; el.dir = PREF.lang==='ar' ? 'rtl' : 'ltr'; });
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));
+  $('upgrades').querySelectorAll('.upg').forEach(b=>{
+    const k=b.dataset.k; b.querySelector('.nm').textContent=t('u_'+k); b.querySelector('.d').textContent=t('u_'+k+'_d'); b.querySelector('.pr').textContent='+'+fCur(UPG[k].cost);
+  });
+  $('btnPlay').textContent = playing ? t('pause') : t('play');
+  $('selLang').value = PREF.lang; $('selCur').value = PREF.cur;
+  $('uMetric').setAttribute('aria-pressed', !IMP()); $('uImperial').setAttribute('aria-pressed', IMP());
+}
+
+function applyPrefs(){ fmtCache.clear(); applyI18n(); renderAbstract(); renderAtlas(); update(); }
+
+function renderCitySelect(){
+  const opts = CITIES.map(c=>`<option value="${c.id}">${esc(c.name)}, ${esc(c.cc)}</option>`).join('');
+  $('selCity').innerHTML = (S.city==='custom' ? `<option value="custom">${esc(t('custom'))}</option>` : '') + opts;
+  $('selCity').value = S.city;
+}
+
+function update(setSliders=true){
+  R = simulate(S, S.cfg);
+  if (setSliders){ $('sT').value=S.T; $('sRH').value=S.RH; $('sV').value=S.v; $('sSw').value=S.sw; $('sA').value=S.area; $('sMo').value=S.mo; $('sP').value=S.p; $('sG').value=S.g; }
+  $('sHour').value = S.hour; $('vHour').textContent = fHour(S.hour);
+  renderCitySelect();
+  $('vT').textContent=fT(S.T); $('vRH').textContent=nf(0).format(S.RH)+' %'; $('vV').textContent=fV(S.v);
+  $('vSw').textContent=fDT(S.sw); $('vA').textContent=fA(S.area); $('vMo').textContent=S.mo+' '+t('u_months');
+  $('vP').textContent=fCur(S.p,true)+' / kWh'; $('vG').textContent=nf(2).format(S.g)+' kg CO₂/kWh';
+  $('upgrades').querySelectorAll('.upg').forEach(b=>b.setAttribute('aria-pressed', !!S.cfg[b.dataset.k]));
+
+  const r = R.hrs[S.hour];
+  const city = CITIES.find(c=>c.id===S.city);
+  $('resWhere').textContent = (city ? city.name : t('custom')) + ' · ' + fHour(S.hour);
+  $('rOut').textContent=fT(r.T); $('rIn').textContent=fT(r.Ti); $('rIn').style.color=tempColor(r.Ti);
+  $('rTs').textContent=fT(r.Ts);
+  $('rQ').textContent=fQ(r.Q)+' · '+nf(0).format(r.Q*3600/(S.area*3))+' ACH';
+  $('rCh').textContent=R.ch+' / 24 '+t('u_h');
+  $('rW').textContent = fL(R.water)+' '+t('u_day');
+  $('rRHin').textContent = nf(0).format(r.RHin)+' %'; $('rFeel').textContent = fT(r.feel); $('rFeel').style.color = tempColor(r.feel);
+  const v = r.feel<=R.up90 ? ['c_ok','var(--ok)'] : r.feel<=R.up80 ? ['c_acc','var(--acc)'] : r.feel<=R.up80+3 ? ['c_warm','var(--warn)'] : ['c_hot','var(--bad)'];
+  $('rComfort').textContent = t(v[0]) + ' · ' + fT(R.lo80,0) + ' – ' + fT(R.up80,0);
+  $('rComfort').style.color = v[1];
+  $('rCost').textContent=fCur(R.cost); $('rPay').textContent=fPay(R.pay);
+  $('rKwh').textContent=fKwh(R.kwh); $('rMoney').textContent=fCur(R.money); $('rCo2').textContent=fKg(R.co2);
+  $('humidWarn').hidden = !(zoneOf(S.T,S.RH)!=='A');
+  $('cv').setAttribute('aria-label', `${fHour(S.hour)} — ${t('outside')} ${fT(r.T)}, ${t('supply')} ${fT(r.Ts)}, ${t('indoor')} ${fT(r.Ti)}, ${t('airflow')} ${fQ(r.Q)}`);
+
+  renderBOM(); renderChart24(); renderAblation(); renderSuit(); markAtlas();
+  history.replaceState(null,'',location.pathname+location.search+'#'+encodeState());
+}
+
+/* ---------- Abstract key figures (Riyadh, full design) ---------- */
+function renderAbstract(){
+  const c = CITIES[0];
+  const RR = simulate({T:c.T,RH:c.RH,v:c.v,sw:c.sw,mo:c.mo,p:c.p,g:c.g,area:20}, FULL);
+  const vals = { 'a-out':fT(c.T,0), 'a-in':fT(RR.peakIn), 'a-ch':nf(0).format(RR.ch), 'a-co2':fKg(RR.co2), 'a-cost':fCur(RR.cost),
+                 'k-out':fT(c.T,0), 'k-in':fT(RR.peakIn), 'k-ch':RR.ch+' / 24', 'k-cost':fCur(RR.cost), 'k-co2':fKg(RR.co2), 'k-pay':fPay(RR.pay), 'k-water':fL(RR.water), 'a-water':fL(RR.water) };
+  document.querySelectorAll('[data-k]').forEach(el=>{ if(vals[el.dataset.k]) el.textContent = vals[el.dataset.k]; });
+}
+
+/* ---------- BOM ---------- */
+function renderBOM(){
+  const rows = [[BASE.name, BASE.mat, BASE.cost], ...UPG_KEYS.filter(k=>S.cfg[k]).map(k=>[I18N.en['u_'+k], UPG[k].mat, UPG[k].cost])];
+  $('bom').innerHTML = rows.map(([n,m,c])=>`<tr><td><b>${esc(n)}</b></td><td class="muted">${esc(m)}</td><td class="n">${fCur(c)}</td></tr>`).join('');
+  $('bomTotal').textContent = fCur(R.cost);
+}
+
+/* ---------- Figure 1: 24 h profile ---------- */
+function toU(c){ return IMP() ? c*9/5+32 : c; }
+function renderChart24(){
+  const W=760,H=300,m={l:48,r:16,t:14,b:34};
+  const hrs=R.hrs;
+  const all=[...hrs.map(r=>r.T),...hrs.map(r=>r.Ts),...hrs.map(r=>r.Ti),...hrs.map(r=>r.feel),R.lo80,R.up80];
+  const lo=Math.floor(Math.min(...all)-1), hi=Math.ceil(Math.max(...all)+1);
+  const x=h=>m.l+(W-m.l-m.r)*h/24, y=c=>m.t+(H-m.t-m.b)*(1-(c-lo)/(hi-lo));
+  const path=(key)=>hrs.map((r,i)=>(i?'L':'M')+x(r.h).toFixed(1)+','+y(r[key]).toFixed(1)).join('')+'L'+x(24).toFixed(1)+','+y(hrs[0][key]).toFixed(1);
+  let g='';
+  const step = (hi-lo)>16 ? 4 : 2;
+  for(let c=Math.ceil(lo/step)*step;c<=hi;c+=step){ g+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${y(c)}" y2="${y(c)}"/><text x="${m.l-8}" y="${y(c)+4}" text-anchor="end">${nf(0).format(toU(c))}°</text>`; }
+  for(let h=0;h<=24;h+=3){ g+=`<text x="${x(h)}" y="${H-12}" text-anchor="middle">${fHour(h%24)}</text>`; }
+  const band=`<rect class="band" x="${m.l}" width="${W-m.l-m.r}" y="${y(R.up80)}" height="${y(R.lo80)-y(R.up80)}"/>`;
+  const mk=`<line class="marker" x1="${x(S.hour)}" x2="${x(S.hour)}" y1="${m.t}" y2="${H-m.b}"/><circle cx="${x(S.hour)}" cy="${y(hrs[S.hour].Ti)}" r="4.5" fill="var(--navy)" stroke="var(--card)" stroke-width="2"/>`;
+  $('chart24').innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('ch24'))}">${band}${g}
+    <line class="axis" x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}"/>
+    <path class="line-out" d="${path('T')}"/><path class="line-sup" d="${path('Ts')}"/><path class="line-feel" d="${path('feel')}"/><path class="line-in" d="${path('Ti')}"/>${mk}</svg>`;
+  $('leg24').innerHTML = `<span><i style="border-color:var(--crimson);border-top-style:dashed"></i>${esc(t('l_out'))}</span><span><i style="border-color:var(--gold)"></i>${esc(t('l_sup'))}</span><span><i style="border-color:var(--navy)"></i>${esc(t('l_in'))}</span><span><i style="border-color:var(--navy);border-top-style:dotted"></i>${esc(t('l_feel'))}</span><span><i class="sw" style="background:var(--ok);opacity:.3"></i>${esc(t('l_band'))}</span>`;
+  const city = CITIES.find(c=>c.id===S.city);
+  $('cap24').textContent = `${city?city.name:t('custom')}: ${t('outside')} ${fT(R.peakOut,0)}, ${t('indoor')} ${fT(R.peakIn)} (${t('feels')} ${fT(R.peakFeel)}), ${R.ch}/24 ${t('u_h')}.`;
+}
+
+/* ---------- Figure 2: ablation ---------- */
+function renderAblation(){
+  const full = simulate(S, FULL);
+  const rows = UPG_KEYS.map(k=>{ const r=simulate(S,{...FULL,[k]:false}); return {k, d:r.peakIn-full.peakIn}; }).sort((a,b)=>b.d-a.d);
+  const W=420,rowH=34,m={l:150,r:64,t:6};
+  const H=m.t+rows.length*rowH+8, max=Math.max(1,...rows.map(r=>r.d));
+  const bars=rows.map((r,i)=>{ const yy=m.t+i*rowH, w=Math.max(1,(W-m.l-m.r)*Math.max(0,r.d)/max);
+    return `<text class="lbl" x="${m.l-10}" y="${yy+20}" text-anchor="end">${esc(t('u_'+r.k))}</text>
+            <rect class="bar${i===0?' top':''}" x="${m.l}" y="${yy+7}" width="${w}" height="18" rx="1"/>
+            <text class="lbl-b" x="${m.l+w+6}" y="${yy+20}">${r.d>=0.05?'+':''}${fDT(r.d)}</text>`; }).join('');
+  $('chartAbl').innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('abl'))}"><line class="axis" x1="${m.l}" x2="${m.l}" y1="0" y2="${H}"/>${bars}</svg>`;
+}
+
+/* ---------- Figure 3: suitability map ---------- */
+let suitCells='';
+const SX={min:25,max:50}, SY={min:5,max:90}, SW=420, SH=330, SM={l:54,r:10,t:10,b:46};
+const sx=T=>SM.l+(SW-SM.l-SM.r)*(T-SX.min)/(SX.max-SX.min), sy=RH=>SM.t+(SH-SM.t-SM.b)*(1-(RH-SY.min)/(SY.max-SY.min));
+function buildSuitCells(){
+  let s=''; const dT=0.5, dR=2.5;
+  for(let T=SX.min;T<SX.max;T+=dT) for(let RH=SY.min;RH<SY.max;RH+=dR){
+    const z=zoneOf(T+dT/2,RH+dR/2);
+    s+=`<rect class="z${z}" x="${sx(T).toFixed(1)}" y="${sy(RH+dR).toFixed(1)}" width="${(sx(T+dT)-sx(T)+0.6).toFixed(1)}" height="${(sy(RH)-sy(RH+dR)+0.6).toFixed(1)}"/>`;
+  }
+  suitCells=s;
+}
+function renderSuit(){
+  let ax='';
+  for(let T=25;T<=50;T+=5) ax+=`<text x="${sx(T)}" y="${SH-26}" text-anchor="middle">${nf(0).format(toU(T))}°</text>`;
+  ax+=`<text class="lbl" x="${(SM.l+SW-SM.r)/2}" y="${SH-6}" text-anchor="middle">${esc(t('tmax'))}</text>`;
+  ax+=`<text class="lbl" transform="translate(12 ${(SM.t+SH-SM.b)/2}) rotate(-90)" text-anchor="middle">${esc(t('rh'))}</text>`;
+  for(let RH=10;RH<=90;RH+=20) ax+=`<text x="${SM.l-6}" y="${sy(RH)+4}" text-anchor="end">${RH}%</text>`;
+  const dots=CITIES.map(c=>`<circle class="dot" data-id="${c.id}" cx="${sx(c.T)}" cy="${sy(c.RH)}" r="4.5"><title>${esc(c.name)}, ${esc(c.cc)} — ${fT(c.T,0)}, ${c.RH}%</title></circle>`).join('');
+  const lbls=['riyadh','dubai','baku','mumbai','phoenix','karachi','singapore','seville'].map(id=>{const c=CITIES.find(x=>x.id===id);return `<text class="lbl" x="${sx(c.T)+7}" y="${sy(c.RH)-6}">${esc(c.name)}</text>`;}).join('');
+  const ring=`<circle class="ring" cx="${sx(clamp(S.T,SX.min,SX.max))}" cy="${sy(clamp(S.RH,SY.min,SY.max))}" r="9"/>`;
+  $('chartSuit').innerHTML=`<svg class="chart" viewBox="0 0 ${SW} ${SH}" role="img" aria-label="${esc(t('suit'))}">${suitCells}<rect x="${SM.l}" y="${SM.t}" width="${SW-SM.l-SM.r}" height="${SH-SM.t-SM.b}" fill="none" stroke="var(--rule-2)"/>${ax}${dots}${lbls}${ring}</svg>`;
+  $('chartSuit').querySelectorAll('.dot').forEach(d=>d.addEventListener('click',()=>{ loadCity(d.dataset.id); update(); }));
+  $('legSuit').innerHTML=['A','B','C'].map(z=>`<span><i class="sw" style="background:var(--z${z});border:1px solid var(--rule-2)"></i>${esc(t('z'+z))}</span>`).join('');
+}
+
+/* ---------- Table 2: atlas ---------- */
+let atlasSort={key:'ch',dir:-1}, atlasData=[];
+function computeAtlas(){
+  atlasData = CITIES.map(c=>{ const r=simulate({...c,area:20}, FULL); return {c, zone:zoneOf(c.T,c.RH), out:c.T, in:r.peakIn, feel:r.peakFeel, ch:r.ch, save:r.money, pay:r.pay, co2:r.co2}; });
+}
+function renderAtlas(){
+  const cols=[['city','th_city',0],['zone','th_zone',0],['out','th_out',1],['in','th_in',1],['ch','th_ch',1],['save','th_save',1],['pay','th_pay',1],['co2','th_co2',1]];
+  $('atlasHead').innerHTML=cols.map(([k,l,n])=>`<th class="${n?'n':''}" aria-sort="${atlasSort.key===k?(atlasSort.dir>0?'ascending':'descending'):'none'}"><button type="button" data-k="${k}">${esc(t(l))}${atlasSort.key===k?(atlasSort.dir>0?' ↑':' ↓'):''}</button></th>`).join('');
+  $('atlasHead').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k; atlasSort = {key:k, dir: atlasSort.key===k ? -atlasSort.dir : (k==='city'||k==='zone'||k==='pay'||k==='in'?1:-1)}; renderAtlas(); markAtlas(); }));
+  const v=r=>atlasSort.key==='city'?r.c.name:atlasSort.key==='zone'?r.zone:(isFinite(r[atlasSort.key])?r[atlasSort.key]:1e9);
+  const rows=[...atlasData].sort((a,b)=>{const A=v(a),B=v(b);return (A>B?1:A<B?-1:0)*atlasSort.dir;});
+  $('atlasBody').innerHTML=rows.map(r=>`<tr data-id="${r.c.id}" tabindex="0"><td><b>${esc(r.c.name)}</b><span class="muted">, ${esc(r.c.cc)}</span></td><td><span class="zone ${r.zone}">${esc(t('z_'+r.zone))}</span></td><td class="n">${fT(r.out,0)}</td><td class="n"><b style="font-weight:600">${fT(r.in)}</b><br><span class="muted" style="font-size:11.5px">${esc(t('feels'))} ${fT(r.feel)}</span></td><td class="n">${r.ch}</td><td class="n">${fCur(r.save)}</td><td class="n">${fPay(r.pay)}</td><td class="n">${fKg(r.co2)}</td></tr>`).join('');
+  $('atlasBody').querySelectorAll('tr').forEach(tr=>{
+    const go=()=>{ loadCity(tr.dataset.id); update(); document.getElementById('model').scrollIntoView(); };
+    tr.addEventListener('click',go); tr.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+  });
+}
+function markAtlas(){ $('atlasBody').querySelectorAll('tr').forEach(tr=>tr.classList.toggle('cur', tr.dataset.id===S.city)); }
+
+/* ---------- Share / restore ---------- */
+function encodeState(){
+  const bits = UPG_KEYS.reduce((s,k,i)=>s|(S.cfg[k]?1<<i:0),0);
+  const p = new URLSearchParams({c:S.city,T:S.T,RH:S.RH,v:S.v,sw:S.sw,a:S.area,mo:S.mo,p:S.p,g:S.g,h:S.hour,u:bits});
+  return p.toString();
+}
+function decodeState(){
+  if (location.hash.length<3) return;
+  try{
+    const p = new URLSearchParams(location.hash.slice(1));
+    const c = p.get('c'); if (c && CITIES.find(x=>x.id===c)) loadCity(c); else if (c==='custom') S.city='custom';
+    const num=(k,lo,hi)=>{ const v=parseFloat(p.get(k)); return isFinite(v)?clamp(v,lo,hi):null; };
+    [['T','T',25,50],['RH','RH',5,90],['v','v',0,10],['sw','sw',4,20],['a','area',8,60],['mo','mo',1,12],['p','p',0.01,0.45],['g','g',0,1],['h','hour',0,23]]
+      .forEach(([q,k,lo,hi])=>{ const v=num(q,lo,hi); if(v!==null) S[k]= k==='hour'||k==='mo'||k==='area' ? Math.round(v) : v; });
+    const u = parseInt(p.get('u')); if (isFinite(u)) UPG_KEYS.forEach((k,i)=>S.cfg[k]=!!(u&(1<<i)));
+  }catch(e){}
+}
+async function share(){
+  const url = location.href;
+  let ok=false;
+  try{ await navigator.clipboard.writeText(url); ok=true; }catch(e){
+    try{ const ta=document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); ok=document.execCommand('copy'); ta.remove(); }catch(e2){}
+  }
+  toast(ok ? t('copied') : url);
+}
+function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('show'),2200); }
+
+/* ---------- Play through the day ---------- */
+let playing=null;
+function startPlay(){ playing=setInterval(()=>{ S.hour=(S.hour+1)%24; update(false); },650); $('btnPlay').textContent=t('pause'); }
+function stopPlay(){ if(playing){ clearInterval(playing); playing=null; } $('btnPlay').textContent=t('play'); }
+
+/* ---------- Section highlight in TOC ---------- */
+function watchToc(){
+  const links=[...document.querySelectorAll('#tocLinks a')];
+  if(!('IntersectionObserver' in window)) return;
+  const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ links.forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#'+e.target.id)); } }); },{rootMargin:'-30% 0px -60% 0px'});
+  links.forEach(a=>{ const s=document.querySelector(a.getAttribute('href')); if(s) io.observe(s); });
+}
+
+/* =====================================================================
+   6. Canvas cross-section
+   ===================================================================== */
+const cv=$('cv'), ctx=cv.getContext('2d');
+const CW=900, CH=540;
+function resize(){ const d=Math.min(2,window.devicePixelRatio||1); cv.width=CW*d; cv.height=CH*d; ctx.setTransform(d,0,0,d,0,0); }
+resize(); addEventListener('resize', resize);
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function tempColor(tc){
+  const stops=[[18,[59,130,246]],[27,[34,211,238]],[33,[245,158,11]],[40,[239,68,68]],[48,[185,28,28]]];
+  if(tc<=stops[0][0]) return `rgb(${stops[0][1]})`;
+  for(let i=1;i<stops.length;i++) if(tc<=stops[i][0]){
+    const [t0,c0]=stops[i-1],[t1,c1]=stops[i],f=(tc-t0)/(t1-t0);
+    return `rgb(${c0.map((v,j)=>Math.round(v+(c1[j]-v)*f)).join(',')})`;
+  }
+  return `rgb(${stops[stops.length-1][1]})`;
+}
+const mix=(a,b,f)=>`rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*f)).join(',')})`;
+function mkPath(pts){ const L=[0]; for(let i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1])); return {pts,L,len:L[L.length-1]}; }
+function at(p,s){ let i=1; while(i<p.L.length-1 && p.L[i]<s) i++; const f=(s-p.L[i-1])/(p.L[i]-p.L[i-1]); const a=p.pts[i-1],b=p.pts[i]; return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f]; }
+const COLD = mkPath([[-20,130],[150,130],[152,460],[200,482],[300,480],[500,472],[680,445],[740,385]]);
+const HOT  = mkPath([[740,385],[700,330],[500,318],[300,322],[228,380],[226,140],[280,110],[420,60],[540,25]]);
+const PAD_S = 140;
+const STARS = Array.from({length:40},()=>[Math.random()*CW, Math.random()*230, Math.random()*1.4+0.4]);
+
+let parts=[], spawnAcc=0, last=performance.now(), fanAng=0, t0=performance.now();
+function particleTemp(p, r){
+  if(p.hot){ const f=p.s/HOT.len; return f<0.45 ? r.Ti : r.Ti + (S.cfg.chimney ? r.dTs : 1.5)*Math.min(1,(f-0.45)/0.35); }
+  if(p.s<PAD_S) return r.T;
+  const f=(p.s-PAD_S)/(COLD.len-PAD_S);
+  return f<0.35 ? r.Ts : r.Ts + (r.Ti-r.Ts)*((f-0.35)/0.65);
+}
+function label(txt,x,y,night){ ctx.font='500 12px Inter, system-ui, sans-serif'; ctx.fillStyle=night?'#e8e1d0':'#3f2d1c'; ctx.fillText(txt,x,y); }
+function badge(txt,x,y,c){
+  ctx.font='600 13px Inter, system-ui, sans-serif'; const w=ctx.measureText(txt).width+16;
+  ctx.fillStyle='rgba(255,253,248,0.94)'; ctx.strokeStyle=c; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x,y-16,w,24,6) : ctx.rect(x,y-16,w,24); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#1d1b18'; ctx.fillText(txt,x+8,y);
+}
+
+function draw(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now; const tt=(now-t0)/1000;
+  const r=R.hrs[S.hour], sol=r.sol, k=Math.min(1,sol*2.2), night=k<0.35;
+  const cfg=S.cfg;
+  // sky
+  const g=ctx.createLinearGradient(0,0,0,CH);
+  g.addColorStop(0,mix([22,30,56],[253,231,196],k)); g.addColorStop(1,mix([58,52,82],[251,243,230],k));
+  ctx.fillStyle=g; ctx.fillRect(0,0,CW,CH);
+  if(k<0.6){ ctx.fillStyle=`rgba(255,255,240,${0.8*(1-k/0.6)})`; STARS.forEach(([x,y,s])=>{ ctx.beginPath(); ctx.arc(x,y,s,0,7); ctx.fill(); }); }
+  // sun or moon
+  if(sol>0){ const sxp=60+(S.hour-6)/12*780, syp=170-130*sol;
+    ctx.fillStyle='rgba(251,191,36,0.25)'; ctx.beginPath(); ctx.arc(sxp,syp,46+3*Math.sin(tt*2),0,7); ctx.fill();
+    ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(sxp,syp,28,0,7); ctx.fill();
+  } else { ctx.fillStyle='#f4efe0'; ctx.beginPath(); ctx.arc(820,70,20,0,7); ctx.fill(); ctx.fillStyle=mix([22,30,56],[22,30,56],0); ctx.beginPath(); ctx.arc(830,64,18,0,7); ctx.fill(); }
+  // ground
+  ctx.fillStyle=mix([92,72,52],[200,162,122],k); ctx.fillRect(0,500,CW,40);
+  ctx.fillStyle=mix([74,58,42],[180,138,98],k); for(let x=0;x<CW;x+=18) ctx.fillRect(x+(x%36?4:0),512,8,3);
+  // wind streaks
+  ctx.strokeStyle=night?'rgba(165,195,255,0.6)':'rgba(59,130,246,0.55)'; ctx.lineWidth=3; ctx.lineCap='round';
+  for(let i=0;i<6;i++){ const yy=75+i*22; const x=((tt*r.v*28*(reduceMotion?0:1)+i*37)%120)-20; ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+18+r.v*2,yy); ctx.stroke(); }
+  ctx.fillStyle=night?'#cfe0ff':'#1e3a8a'; ctx.font='600 13px Inter, system-ui, sans-serif'; ctx.fillText(t('cv_wind')+' '+fV(r.v),8,225);
+  // room
+  ctx.fillStyle='#fffaf2'; ctx.fillRect(266,300,504,200);
+  ctx.globalAlpha=0.13; ctx.fillStyle=tempColor(r.Ti); ctx.fillRect(266,300,504,200); ctx.globalAlpha=1;
+  if(night){ ctx.fillStyle='rgba(20,24,48,0.18)'; ctx.fillRect(266,300,504,200); }
+  ctx.fillStyle=cfg.mass?'#a97c56':'#9ca3af'; ctx.fillRect(260,288,520,cfg.mass?14:10); ctx.fillRect(770,288,cfg.mass?16:10,212);
+  if(cfg.mass){ ctx.fillStyle='rgba(0,0,0,0.12)'; for(let x=262;x<780;x+=22) ctx.fillRect(x,292,10,3); for(let yy=300;yy<500;yy+=20) ctx.fillRect(774,yy,8,3); }
+  ctx.fillStyle='#475569'; ctx.beginPath(); ctx.arc(560,420,9,0,7); ctx.fill(); ctx.fillRect(553,431,14,32); ctx.fillRect(553,463,5,30); ctx.fillRect(562,463,5,30);
+  ctx.fillStyle='#d6c3a5'; ctx.fillRect(620,455,90,8); ctx.fillRect(626,463,6,37); ctx.fillRect(698,463,6,37);
+  // tower
+  const towerC='#e7d8bf', edge='#8b6f4e';
+  ctx.fillStyle=towerC; ctx.fillRect(108,200,12,300); ctx.fillRect(260,200,12,100); ctx.fillRect(187,60,6,380);
+  ctx.fillStyle='#d9c4a0'; ctx.fillRect(100,28,180,32);
+  ctx.fillStyle=edge; ctx.fillRect(96,22,188,8); ctx.fillRect(104,196,172,6);
+  ctx.fillStyle='rgba(231,216,191,0.45)'; ctx.fillRect(120,60,140,440);
+  ctx.fillStyle=edge; [110,118].forEach(x=>ctx.fillRect(x,60,3,136)); [262,270].forEach(x=>ctx.fillRect(x,60,3,136));
+  ctx.strokeStyle=edge; ctx.lineWidth=1.5; ctx.strokeRect(108,28,164,472);
+  if(cfg.chimney){
+    ctx.fillStyle='#111827'; ctx.fillRect(272,200,12,88);
+    ctx.fillStyle='rgba(186,230,253,0.6)'; ctx.fillRect(284,200,4,88);
+    if(sol>0){ ctx.strokeStyle=`rgba(251,191,36,${0.3+0.6*sol})`; ctx.lineWidth=2; for(let i=0;i<3;i++){ ctx.beginPath(); ctx.moveTo(330+i*14,190+i*25); ctx.lineTo(296,215+i*25); ctx.stroke(); } }
+    label(t('cv_chim'),296,276,night);
+  }
+  if(cfg.pad){
+    ctx.fillStyle='rgba(56,189,248,0.45)'; ctx.fillRect(112,62,12,134);
+    ctx.strokeStyle='rgba(14,116,144,0.8)'; ctx.lineWidth=1;
+    for(let yy=64;yy<196;yy+=8){ ctx.beginPath(); ctx.moveTo(112,yy); ctx.lineTo(124,yy+6); ctx.stroke(); }
+    ctx.fillStyle='#0e7490'; ctx.fillRect(104,56,26,5);
+    ctx.fillStyle='#38bdf8'; for(let i=0;i<3;i++){ const yy=62+((tt*60*(reduceMotion?0:1)+i*45)%130); ctx.beginPath(); ctx.arc(118,yy,2,0,7); ctx.fill(); }
+    label(t('cv_pad'),14,255,night);
+  }
+  if(cfg.mesh){ ctx.strokeStyle='rgba(55,65,81,0.6)'; ctx.setLineDash([2,3]); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(106,60); ctx.lineTo(106,196); ctx.moveTo(276,60); ctx.lineTo(276,196); ctx.stroke(); ctx.setLineDash([]); }
+  if(cfg.louvers){
+    const open = night ? 1.6 : 1;
+    ctx.strokeStyle='#65a30d'; ctx.lineWidth=3;
+    for(let yy=72;yy<196;yy+=18){ ctx.beginPath(); ctx.moveTo(92,yy-6*open); ctx.lineTo(106,yy+4); ctx.stroke(); ctx.beginPath(); ctx.moveTo(278,yy+4); ctx.lineTo(292,yy-6*open); ctx.stroke(); }
+    ctx.fillStyle='#14532d'; ctx.fillRect(196,206,40,18); ctx.fillStyle='#bbf7d0'; ctx.font='600 11px Inter, system-ui, sans-serif'; ctx.fillText('ESP32',199,219);
+  }
+  if(cfg.fan){
+    ctx.fillStyle='#1e3a8a'; ctx.beginPath(); ctx.moveTo(130,20); ctx.lineTo(250,20); ctx.lineTo(236,2); ctx.lineTo(144,2); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#93c5fd'; ctx.lineWidth=1; for(let x=160;x<240;x+=20){ ctx.beginPath(); ctx.moveTo(x,20); ctx.lineTo(x-4,2); ctx.stroke(); }
+    const fanOn = sol>0.02;
+    if(!reduceMotion && fanOn) fanAng += dt*(6+r.Q*14);
+    ctx.save(); ctx.translate(226,265); ctx.rotate(fanAng); ctx.fillStyle=fanOn?'#64748b':'#94a3b8';
+    for(let i=0;i<3;i++){ ctx.rotate(Math.PI*2/3); ctx.beginPath(); ctx.ellipse(0,-12,5,12,0,0,7); ctx.fill(); }
+    ctx.restore(); ctx.fillStyle='#0f172a'; ctx.beginPath(); ctx.arc(226,265,4,0,7); ctx.fill();
+    label(t('cv_fan'),296,250,night); label(t('cv_panel'),254,14,night);
+  }
+  // particles
+  if(!reduceMotion) spawnAcc += dt*r.Q*55;
+  else if(parts.length===0){ for(let i=0;i<120;i++) parts.push({s:Math.random()*COLD.len,hot:Math.random()<0.45,j:1,o:(Math.random()-0.5)*16}); parts.forEach(p=>{ if(p.hot) p.s=Math.random()*HOT.len; }); }
+  while(spawnAcc>1 && parts.length<500){ spawnAcc--; parts.push({s:0,hot:false,j:0.8+Math.random()*0.4,o:(Math.random()-0.5)*16}); }
+  if(!reduceMotion){
+    const speed=40+r.Q*170;
+    for(const p of parts){ p.s += speed*p.j*dt; if(!p.hot && p.s>=COLD.len){ p.hot=true; p.s=0; } }
+    parts = parts.filter(p=>!(p.hot && p.s>=HOT.len));
+  }
+  for(const p of parts){
+    const [x,y]=at(p.hot?HOT:COLD,p.s);
+    ctx.fillStyle=tempColor(particleTemp(p,r)); ctx.globalAlpha=0.85;
+    ctx.beginPath(); ctx.arc(x+(p.hot?0:p.o*0.4), y+p.o*0.5, 3, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  // readouts
+  badge(`${t('outside')} ${fT(r.T,0)} · ${nf(0).format(r.RH)}%`, 330, 150, tempColor(r.T));
+  badge(`${t('cv_sup')} ${fT(r.Ts)}`, 130, 478, tempColor(r.Ts));
+  badge(`${t('cv_room')} ${fT(r.Ti)}`, 420, 395, tempColor(r.Ti));
+  badge(t('cv_out'), 430, 92, '#ef4444');
+  if(night && cfg.louvers) badge(t('cv_night'), 600, 150, '#65a30d');
+  badge(fHour(S.hour), 16, 40, night?'#6b7bb5':'#d4a24a');
+  requestAnimationFrame(draw);
+}
+
+/* =====================================================================
+   7. Boot
+   ===================================================================== */
+buildStatic();
+decodeState();
+buildSuitCells();
+computeAtlas();
+applyI18n();
+renderAbstract();
+renderAtlas();
+update();
+watchToc();
+addEventListener('hashchange',()=>{ if(location.hash.slice(1)!==encodeState()){ decodeState(); update(); } });
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
